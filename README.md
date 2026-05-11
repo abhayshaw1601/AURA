@@ -1,30 +1,23 @@
-<div align="center">
+# Aura: Ambient Security & Privacy Layer
 
-# ◈ Aura
-### Ambient Security & Privacy Layer
+*A subtle, non-intrusive browser extension designed to protect users without interrupting their workflow.*
 
-*A calm, non-intrusive browser extension that quietly protects you — without the noise.*
-
-[![Chrome Extension](https://img.shields.io/badge/Chrome-Manifest%20V3-black?style=flat-square&logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/mv3/)
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
-[![Gemini](https://img.shields.io/badge/Gemini-2.5%20Flash%20Lite-black?style=flat-square&logo=google&logoColor=white)](https://ai.google.dev/)
-[![InnovateX](https://img.shields.io/badge/InnovateX%201.0-Cybersecurity%20%26%20Privacy-black?style=flat-square)](.)
-
-</div>
+[Chrome Manifest V3] | [Next.js 16] | [Gemini 2.5 Flash Lite]
 
 ---
 
 ## Overview
 
-Aura is an ambient security layer built as a Chrome Extension. It silently monitors your browsing environment and provides subtle, non-intrusive visual cues to educate and protect users — without interrupting their flow.
+Aura operates as an ambient security layer within your browser. It monitors your browsing environment in real-time and provides subtle visual cues to educate and protect against emerging threats, privacy risks, and misinformation.
 
-| Feature | Description |
-|---|---|
-| **Privacy Sense** | Detects privacy/terms pages and generates a 3-bullet plain-English summary |
-| **Trust Shield** | Scans social media feeds for Urgency Bias, Tone Mismatch & Metadata inconsistencies |
-| **Ambient UI** | Pulsing icon + glassmorphic hover panel injected via Shadow DOM |
-| **Smart Cache** | 24-hour URL-based cache to avoid redundant API calls |
-| **Popup Panel** | MetaMask-style extension popup with skeleton loading & live updates |
+### Core Features
+
+* **Zero-Day Inference Engine**: Evaluates website metadata, TLS certificate integrity, and content context using Google Gemini to detect novel phishing or malicious sites before they appear on standard blacklists.
+* **Threat Intelligence Sync**: Automatically cross-references visited domains against established threat databases to block known malicious sources.
+* **Certificate & Security Audit**: Inspects TLS certificates for expiry, SNI mismatches, and audits HTTP security headers (HSTS, CSP, X-Frame-Options) to ensure connection integrity.
+* **Privacy Sense**: Detects privacy policies and terms of service pages, generating a concise, plain-English summary of critical data retention and selling practices.
+* **Trust Shield**: Scans social media feeds to detect urgency bias, tone mismatches, and metadata inconsistencies that indicate potential misinformation.
+* **Ambient UI**: Utilizes the Shadow DOM to inject subtle visual indicators (such as pulsing icons and glassmorphic panels) that alert users without disrupting their flow.
 
 ---
 
@@ -33,118 +26,89 @@ Aura is an ambient security layer built as a Chrome Extension. It silently monit
 ![Aura Architecture](./architecture.png)
 
 <details>
-<summary>View detailed Mermaid diagram</summary>
+<summary>View detailed system diagram</summary>
 
 ```mermaid
 graph TB
-    subgraph Browser["Browser (Client)"]
+    subgraph Client [Browser Extension]
         direction TB
-        CS["Content Script<br/><i>content.js</i><br/>DOM Parser · UI Injector"]
-        BG["Service Worker<br/><i>background.js</i><br/>API Orchestrator · Cache Manager"]
-        PU["Extension Popup<br/><i>popup.html / popup.js</i><br/>MetaMask-style Panel"]
-        ST[("chrome.storage.local<br/><i>Result Cache · URL Cache</i>")]
-        SD["Shadow DOM<br/><i>Pulse Icon · Glassmorphic Panel</i>"]
+        CS[Content Script: DOM Parser & UI Injector]
+        BG[Service Worker: API Orchestrator & Cache Manager]
+        PU[Extension Popup: Dashboard Panel]
+        ST[(Local Storage: Cache)]
+        SD[Shadow DOM: Ambient Alerts]
     end
 
-    subgraph Server["Server (Next.js on localhost:3000)"]
+    subgraph Server [Next.js Backend]
         direction TB
-        SR["/api/summarize<br/><i>Privacy Policy Analysis</i>"]
-        TS["/api/trust-shield<br/><i>Misinformation Detection</i>"]
+        SR[/api/summarize: Privacy Policy Analysis]
+        TS[/api/trust-shield: Misinformation Detection]
+        TL[/api/threat-list: Domain Blocklist]
+        CC[/api/cert-check: TLS/Header Audit]
+        JS[/api/judge-site: Zero-Day Inference]
     end
 
-    subgraph AI["Google AI"]
-        GM["Gemini 2.5 Flash Lite<br/><i>NLU · JSON Output</i>"]
+    subgraph AI [Inference]
+        GM[Gemini 2.5 Flash Lite]
     end
 
-    CS -->|"Page text + URL"| BG
-    BG -->|"Check cache"| ST
-    ST -->|"Cache HIT"| BG
-    BG -->|"Cache MISS POST /summarize"| SR
-    BG -->|"POST /trust-shield"| TS
-    SR -->|"Prompt"| GM
-    TS -->|"Prompt"| GM
-    GM -->|"JSON result"| SR
-    GM -->|"JSON result"| TS
-    SR -->|"Result"| BG
-    TS -->|"Result"| BG
-    BG -->|"Store result"| ST
-    BG -->|"Update badge"| PU
-    CS -->|"Render"| SD
-    ST -->|"onChanged"| PU
+    CS -->|Page Data| BG
+    BG -->|Sync| TL
+    BG -->|Audit| CC
+    BG -->|Analyze| JS
+    JS -->|Prompt| GM
+    SR -->|Prompt| GM
+    TS -->|Prompt| GM
+    GM -->|JSON Output| Server
+    Server -->|Result| BG
+    BG -->|Store| ST
+    BG -->|Update Badge| PU
+    CS -->|Render| SD
 ```
 
 </details>
 
 ---
 
-## Flow Diagram — Privacy Sense
+## System Workflows
+
+### 1. Active Threat Detection
 
 ```mermaid
 sequenceDiagram
-    participant U as User
-    participant C as content.js
-    participant B as background.js
-    participant S as chrome.storage
-    participant A as /api/summarize
-    participant G as Gemini 2.5 Flash Lite
+    participant User
+    participant Ext as Extension
+    participant API as Backend Services
+    participant AI as Gemini 2.5
 
-    U->>C: Navigates to /privacy or /terms page
-    C->>C: isPrivacyPolicyPage() → true
-    C->>C: Inject Shadow DOM Pulse Icon
-    C->>B: sendMessage(summarizePrivacyPolicy, text, pageUrl)
-    B->>S: readCache(pageUrl)
-
-    alt Cache HIT (within 24h)
-        S-->>B: Cached result
-        B->>S: applyResult(tabId, cached)
-        B-->>C: { success: true, fromCache: true }
-        Note over C: Instant response — no API call!
-    else Cache MISS
-        B->>A: POST { text }
-        A->>G: Prompt: Analyze + return JSON
-        G-->>A: { riskLevel, summary[] }
-        A-->>B: JSON result
-        B->>S: writeCache(pageUrl, data)
-        B->>S: store aura_result_{tabId}
-        B-->>C: { success: true, data }
+    User->>Ext: Navigates to a new domain
+    Ext->>Ext: Check against local Threat List cache
+    alt Domain Blacklisted
+        Ext->>User: Display immediate danger indicator
+    else Domain Unknown
+        Ext->>API: /api/cert-check (Fetch TLS & Headers)
+        API-->>Ext: Return Certificate & Header Data
+        Ext->>API: /api/judge-site (Send cert data, page text, domain)
+        API->>AI: Evaluate for zero-day phishing
+        AI-->>API: Inference score and risk level
+        API-->>Ext: Return judgment
+        Ext->>User: Update UI badge and status panel
     end
-
-    C->>C: Update icon color (low/med/high)
-    C->>C: Render bullet points in hover panel
-    U->>U: Clicks extension icon
-    U-->>S: popup.js reads aura_result_{tabId}
-    S-->>U: Renders monochromatic popup with Lucide icons
 ```
 
----
-
-## Flow Diagram — Trust Shield
+### 2. Privacy Sense
 
 ```mermaid
 sequenceDiagram
-    participant U as User
-    participant C as content.js (MutationObserver)
-    participant B as background.js
-    participant A as /api/trust-shield
-    participant G as Gemini 2.5 Flash Lite
+    participant User
+    participant Ext as Extension
+    participant API as Backend Services
 
-    U->>C: Scrolls social media feed (X / LinkedIn)
-    C->>C: MutationObserver detects new article elements
-    C->>C: Filter: not yet scanned & text.length > 40
-    C->>C: setAttribute(data-aura-scanned, true)
-    C->>B: sendMessage(checkMisinformation, [post text])
-    B->>A: POST { texts: [post text] }
-    A->>G: Prompt: Check Urgency Bias, Tone Mismatch, Metadata Mismatch
-    G-->>A: { flagged: true/false, reason, riskLevel }
-    A-->>B: JSON result
-    B-->>C: { success: true, data }
-
-    alt flagged === true
-        C->>C: Apply rgba(254,243,199,0.4) background highlight
-        C->>C: Set title tooltip with reason
-    else flagged === false
-        C->>C: No visual change
-    end
+    User->>Ext: Navigates to privacy policy page
+    Ext->>Ext: Inject Ambient UI
+    Ext->>API: POST /api/summarize
+    API-->>Ext: Return JSON summary
+    Ext->>User: Update glassmorphic hover panel
 ```
 
 ---
@@ -153,69 +117,57 @@ sequenceDiagram
 
 ```
 AURA/
-├── extension/                  # Chrome Extension (Manifest V3)
-│   ├── manifest.json           # Extension config, permissions, popup
-│   ├── background.js           # Service Worker: cache + API orchestration
-│   ├── content.js              # DOM parser, Shadow DOM injector, Trust Shield observer
-│   ├── popup.html              # MetaMask-style popup UI
-│   ├── popup.js                # Popup logic with live storage listener + polling
-│   ├── styles.css              # Global highlight class for Trust Shield
-│   └── icons/                  # Extension icons (16, 48, 128px)
+├── extension/                  
+│   ├── manifest.json           
+│   ├── background.js           
+│   ├── content.js              
+│   ├── popup.html              
+│   ├── popup.js                
+│   ├── styles.css              
+│   └── icons/                  
 │
-└── api/                        # Next.js Backend (App Router)
+└── api/                        
     ├── src/app/api/
-    │   ├── summarize/route.ts  # Privacy policy analysis endpoint
-    │   └── trust-shield/route.ts # Misinformation detection endpoint
-    ├── next.config.ts          # CORS headers for extension access
-    └── .env                    # GEMINI_API_KEY (never committed)
+    │   ├── summarize/route.ts  
+    │   ├── trust-shield/route.ts 
+    │   ├── threat-list/route.ts
+    │   ├── cert-check/route.ts
+    │   └── judge-site/route.ts
+    ├── next.config.ts          
+    └── .env                    
 ```
 
 ---
 
-## Setup
+## Setup Instructions
 
 ### Prerequisites
-- Node.js 18+
-- Google Chrome
-- Gemini API Key from [Google AI Studio](https://aistudio.google.com/)
+* Node.js 18 or higher
+* Google Chrome
+* Gemini API Key
 
-### 1. Start the Backend
+### 1. Start the Backend Service
 
 ```bash
 cd api
-# Add your key to .env
-echo "GEMINI_API_KEY=your_key_here" > .env
+echo "GEMINI_API_KEY=your_api_key_here" > .env
 npm install
 npm run dev
-# Backend running at http://localhost:3000
 ```
+*The backend will initialize at http://localhost:3000.*
 
 ### 2. Load the Extension
 
-1. Open `chrome://extensions` in Chrome
-2. Enable **Developer Mode** (top right toggle)
-3. Click **Load unpacked**
-4. Select the `/extension` folder
+1. Open `chrome://extensions` in Google Chrome.
+2. Enable **Developer mode** in the top right corner.
+3. Click **Load unpacked**.
+4. Select the `extension` directory from this repository.
 
-### 3. Test it
+### 3. Verification
 
-- Navigate to `https://policies.google.com/privacy` → Pulse icon appears, click the extension icon for the full summary
-- Navigate to `https://x.com` or `https://linkedin.com` → suspicious posts get a subtle yellow highlight
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Browser Extension | Chrome Manifest V3, Vanilla JS, Shadow DOM |
-| Backend | Next.js 16 App Router, TypeScript |
-| AI | Google Gemini 2.5 Flash Lite |
-| Cache | `chrome.storage.local` (URL-keyed, 24h TTL) |
-| UI | Monochromatic design, Lucide SVG icons, CSS shimmer skeleton |
+* **Threat Detection**: Navigate to an unknown site. The extension popup will display the current TLS status and the AI's zero-day inference result.
+* **Privacy Sense**: Navigate to any major privacy policy page (e.g., Google or Meta). A subtle icon will appear in the bottom right; hover over it to view the generated summary.
 
 ---
 
-<div align="center">
-<sub>Built for InnovateX 1.0 — Problem Statement #14: Cybersecurity & Privacy</sub>
-</div>
+Built for InnovateX 1.0 (Cybersecurity & Privacy).

@@ -7,7 +7,7 @@
 ## 2. Technical Stack Constraints
 - [cite_start]**Extension:** Chrome Manifest V3 [cite: 72]
 - [cite_start]**Backend:** Next.js (Node.js/Express compatible) [cite: 72]
-- [cite_start]**AI:** Gemini 1.5 Flash API (for low latency) [cite: 101]
+- [cite_start]**AI:** Gemini 2.5 Flash Lite API (for low latency) [cite: 101]
 - **Styling:** Tailwind CSS (within Shadow DOM)
 
 ## 3. Modular Architecture (Phase-Wise)
