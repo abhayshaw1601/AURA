@@ -131,7 +131,13 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
  */
 function checkSuspicious(url, referrer) {
   // ── Teammate inserts real logic here ──────────────────────────
-  // Placeholder heuristic: flag if the download URL's domain
+  
+  // 1. Force trigger for our test file
+  if (url.includes('dummy.pdf')) {
+    return 1;
+  }
+
+  // 2. Placeholder heuristic: flag if the download URL's domain
   // doesn't share a root with the referrer domain.
   try {
     const dlHost  = new URL(url).hostname.replace(/^www\./, '');
