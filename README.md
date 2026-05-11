@@ -24,10 +24,8 @@ Aura operates as an ambient security layer within your browser. It monitors your
 
 ## Architecture Diagram
 
-![Aura Architecture](./architecture.png)
-
-<details>
-<summary>View detailed system diagram</summary>
+<details open>
+<summary>View system diagram</summary>
 
 ```mermaid
 graph TB
@@ -42,11 +40,11 @@ graph TB
 
     subgraph Server [Next.js Backend]
         direction TB
-        SR[/api/summarize: Privacy Policy Analysis]
-        TS[/api/trust-shield: Misinformation Detection]
-        TL[/api/threat-list: Domain Blocklist]
-        CC[/api/cert-check: TLS/Header Audit]
-        JS[/api/judge-site: Zero-Day Inference]
+        SR["/api/summarize: Privacy Policy Analysis"]
+        TS["/api/trust-shield: Misinformation Detection"]
+        TL["/api/threat-list: Domain Blocklist"]
+        CC["/api/cert-check: TLS/Header Audit"]
+        JS["/api/judge-site: Zero-Day Inference"]
     end
 
     subgraph AI [Inference]

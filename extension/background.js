@@ -602,14 +602,14 @@ chrome.downloads.onCreated.addListener((downloadItem) => {
       }
     });
 
-    // 2. Update the extension badge — alert indicator
-    chrome.action.setBadgeText({ text: '✕' });
-    chrome.action.setBadgeBackgroundColor({ color: '#E07A5F' }); // Danger (Warm)
-
-    // 3. Find the active tab and notify the content script to show toast
+    // 3. Find the active tab and notify it
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs[0];
       if (!tab) return;
+
+      // Update the badge ONLY for the current active tab instead of globally
+      chrome.action.setBadgeText({ text: '✕', tabId: tab.id });
+      chrome.action.setBadgeBackgroundColor({ color: '#E07A5F', tabId: tab.id }); // Danger (Warm)
 
       // Send to content.js to inject the Shadow DOM toast
       chrome.tabs.sendMessage(tab.id, {
