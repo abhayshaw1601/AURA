@@ -52,8 +52,8 @@ function applyResult(tabId, data) {
   if (tabId) {
     chrome.storage.local.set({ [`aura_result_${tabId}`]: data });
     const riskLevel = data.riskLevel || 'low';
-    const badgeColors = { low: '#525252', med: '#404040', high: '#2a2a2a' };
-    const badgeTexts  = { low: 'OK',      med: '!',       high: '!!' };
+    const badgeColors = { low: '#81B29A', med: '#E07A5F', high: '#AB5C48' }; // Safe, Warning, Danger
+    const badgeTexts  = { low: '✓',      med: '!',       high: '✕' };
     chrome.action.setBadgeText({ text: badgeTexts[riskLevel] || '?', tabId });
     chrome.action.setBadgeBackgroundColor({ color: badgeColors[riskLevel] || '#404040', tabId });
   }
@@ -582,9 +582,9 @@ chrome.downloads.onCreated.addListener((downloadItem) => {
       }
     });
 
-    // 2. Update the extension badge — soft yellow, calm indicator
-    chrome.action.setBadgeText({ text: '!' });
-    chrome.action.setBadgeBackgroundColor({ color: '#92400E' }); // dark amber, monochromatic
+    // 2. Update the extension badge — alert indicator
+    chrome.action.setBadgeText({ text: '✕' });
+    chrome.action.setBadgeBackgroundColor({ color: '#E07A5F' }); // Danger (Warm)
 
     // 3. Find the active tab and notify the content script to show toast
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -607,6 +607,16 @@ chrome.downloads.onCreated.addListener((downloadItem) => {
         referrer: referrer || '',
         mime: mime || '',
       }).catch(() => {}); // popup may not be open — that's fine
+
+      // Open an OS-level notification instead of a window, so it doesn't get hidden by the "Save As" dialog
+      chrome.notifications.create(`aura_dl_${id}`, {
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+        title: 'Aura — Suspicious Download',
+        message: 'This download\'s source metadata is inconsistent with your browsing flow. Proceed with caution.',
+        priority: 2,
+        requireInteraction: true // Keeps the notification open until the user dismisses it
+      });
     });
   });
 });

@@ -19,14 +19,14 @@ function injectAmbientUI() {
   // Add styles
   const style = document.createElement('style');
   style.textContent = `
-    /* System font stack — avoids CSP violations */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     
     .aura-container {
       position: fixed;
       bottom: 24px;
       right: 24px;
       z-index: 2147483647;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-family: 'Inter', sans-serif;
     }
 
     .aura-pulse-icon {
@@ -50,32 +50,32 @@ function injectAmbientUI() {
     }
     
     .aura-pulse-icon.low { 
-      background-color: #D1FAE5; color: #065F46;
+      background-color: rgba(129, 178, 154, 0.2); color: #81B29A;
       animation: aura-pulse-anim-low 2s infinite;
     }
     .aura-pulse-icon.med { 
-      background-color: #FEF3C7; color: #92400E;
+      background-color: rgba(224, 122, 95, 0.2); color: #E07A5F;
       animation: aura-pulse-anim-med 2s infinite;
     }
     .aura-pulse-icon.high { 
-      background-color: #FEE2E2; color: #991B1B;
+      background-color: rgba(171, 92, 72, 0.2); color: #AB5C48;
       animation: aura-pulse-anim-high 2s infinite;
     }
 
     @keyframes aura-pulse-anim-low {
-      0% { box-shadow: 0 0 0 0 rgba(209, 250, 229, 0.7); }
-      70% { box-shadow: 0 0 0 15px rgba(209, 250, 229, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(209, 250, 229, 0); }
+      0% { box-shadow: 0 0 0 0 rgba(129, 178, 154, 0.6); }
+      70% { box-shadow: 0 0 0 15px rgba(129, 178, 154, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(129, 178, 154, 0); }
     }
     @keyframes aura-pulse-anim-med {
-      0% { box-shadow: 0 0 0 0 rgba(254, 243, 199, 0.7); }
-      70% { box-shadow: 0 0 0 15px rgba(254, 243, 199, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(254, 243, 199, 0); }
+      0% { box-shadow: 0 0 0 0 rgba(224, 122, 95, 0.6); }
+      70% { box-shadow: 0 0 0 15px rgba(224, 122, 95, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(224, 122, 95, 0); }
     }
     @keyframes aura-pulse-anim-high {
-      0% { box-shadow: 0 0 0 0 rgba(254, 226, 226, 0.7); }
-      70% { box-shadow: 0 0 0 15px rgba(254, 226, 226, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(254, 226, 226, 0); }
+      0% { box-shadow: 0 0 0 0 rgba(171, 92, 72, 0.6); }
+      70% { box-shadow: 0 0 0 15px rgba(171, 92, 72, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(171, 92, 72, 0); }
     }
 
     .aura-summary-panel {
@@ -83,9 +83,7 @@ function injectAmbientUI() {
       bottom: 72px;
       right: 0;
       width: 320px;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: #F4F1DE;
       border-radius: 16px;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
       padding: 20px;
@@ -93,7 +91,7 @@ function injectAmbientUI() {
       transform: translateY(10px) scale(0.95);
       pointer-events: none;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(61, 64, 91, 0.15);
       transform-origin: bottom right;
     }
     .aura-container:hover .aura-summary-panel {
@@ -105,7 +103,7 @@ function injectAmbientUI() {
       font-weight: 600;
       margin-bottom: 12px;
       font-size: 15px;
-      color: #111827;
+      color: #3D405B;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -115,7 +113,7 @@ function injectAmbientUI() {
       padding-left: 20px;
       font-size: 13.5px;
       line-height: 1.5;
-      color: #374151;
+      color: rgba(61, 64, 91, 0.8);
     }
     .aura-list li {
       margin-bottom: 8px;
@@ -235,22 +233,24 @@ function showDownloadToast() {
 
   const style = document.createElement('style');
   style.textContent = `
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
     .toast {
       position: fixed;
       bottom: 90px;
       right: 24px;
       z-index: 2147483647;
       width: 320px;
-      background: rgba(15, 15, 15, 0.92);
-      border: 1px solid #2a2a2a;
-      border-left: 3px solid #92400E;
+      background: #F4F1DE;
+      border: 1px solid rgba(171, 92, 72, 0.3);
+      border-left: 4px solid #E07A5F;
       border-radius: 10px;
       padding: 14px 16px;
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       animation: toast-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
     @keyframes toast-in {
@@ -259,23 +259,23 @@ function showDownloadToast() {
     }
     .toast-icon {
       width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
-      color: #a16207;
+      color: #E07A5F;
     }
     .toast-title {
       font-size: 12px; font-weight: 600;
-      color: #e5e5e5; margin-bottom: 4px;
+      color: #3D405B; margin-bottom: 4px;
     }
     .toast-body {
       font-size: 11.5px; line-height: 1.55;
-      color: #737373;
+      color: #AB5C48;
     }
     .toast-close {
       position: absolute; top: 10px; right: 12px;
       background: none; border: none; cursor: pointer;
-      color: #525252; font-size: 14px; line-height: 1;
+      color: rgba(171, 92, 72, 0.5); font-size: 14px; line-height: 1;
       padding: 0;
     }
-    .toast-close:hover { color: #a3a3a3; }
+    .toast-close:hover { color: #AB5C48; }
   `;
 
   const toast = document.createElement('div');
