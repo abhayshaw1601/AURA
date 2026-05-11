@@ -1,5 +1,18 @@
 // popup.js
 
+// ─── Tab switching ───────────────────────────────────────────────
+function switchTab(name) {
+  ['privacy', 'security'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === name);
+    document.getElementById(`panel-${t}`).classList.toggle('active', t === name);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('tab-privacy').addEventListener('click', () => switchTab('privacy'));
+  document.getElementById('tab-security').addEventListener('click', () => switchTab('security'));
+});
+
 // Lucide SVG icons (inline, no external dependency)
 const ICONS = {
   // Data selling → share-2
@@ -206,3 +219,222 @@ function renderDownloadAlert(url) {
   const mainContent = document.getElementById('main-content');
   if (mainContent) mainContent.prepend(banner);
 }
+
+// ═══════════════════════════════════════════════════════════
+// ── Phase 1: Security Tab ───────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+
+function renderSecurityLoading() {
+  document.getElementById('security-content').innerHTML = `
+    <div class="content">
+      <div class="sec-skeleton">
+        <div class="skeleton-base sec-skeleton-row"></div>
+        <div class="skeleton-base sec-skeleton-row"></div>
+        <div class="skeleton-base sec-skeleton-row"></div>
+        <div class="skeleton-base sec-skeleton-row"></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSecurityError(msg) {
+  document.getElementById('security-content').innerHTML = `
+    <div class="content">
+      <div class="idle-state">
+        <div class="idle-icon">${ICONS.alert}</div>
+        <div class="idle-title">Security check failed</div>
+        <div class="idle-sub">${msg || 'Backend unreachable. Ensure the Next.js server is running.'}</div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * renderSecurity — renders the full Security tab content.
+ * @param {object} integrity — aura_integrity_{tabId} object from chrome.storage
+ * @param {object} threat    — aura_threat_{tabId} object from chrome.storage
+ * @param {object} ai        — aura_ai_{tabId} object from chrome.storage
+ * @param {object} dbInfo    — metadata about the local threat database
+ */
+function renderSecurity({ integrity, threat, ai, dbInfo }) {
+  const container = document.getElementById('security-content');
+
+  // ─ Certificate & Integrity ─────────────────────────────
+  const cert = integrity ? integrity.certificate : null;
+  const isSecure = integrity ? integrity.connectionSecure : false;
+
+  let certHTML = '';
+  if (cert) {
+    const expiryClass = cert.isExpired
+      ? 'expiry-err'
+      : cert.isExpiringSoon ? 'expiry-warn' : 'expiry-ok';
+    const expiryLabel = cert.isExpired
+      ? `EXPIRED ${Math.abs(cert.daysRemaining)}d ago`
+      : `${cert.daysRemaining}d remaining`;
+
+    // Format validTo date nicely
+    let expiryDisplay = cert.validTo;
+    try { expiryDisplay = new Date(cert.validTo).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }); } catch (_) {}
+
+    certHTML = `
+      <div class="cert-row">
+        <div class="cert-key">Domain</div>
+        <div class="cert-val">${cert.subjectName}</div>
+      </div>
+      <div class="cert-row">
+        <div class="cert-key">Issuer</div>
+        <div class="cert-val">${cert.issuerName}</div>
+      </div>
+      <div class="cert-row">
+        <div class="cert-key">Expires</div>
+        <div class="cert-val ${expiryClass}">${expiryDisplay} &mdash; <strong>${expiryLabel}</strong></div>
+      </div>
+    `;
+  } else {
+    certHTML = `<div class="cert-row"><div class="cert-val" style="color:#555">Certificate data unavailable</div></div>`;
+  }
+
+  // ─ Security headers grid ────────────────────────────
+  const sh = integrity ? (integrity.securityHeaders || {}) : {};
+  const headerPills = [
+    { label: 'HSTS',           key: 'hsts' },
+    { label: 'CSP',            key: 'csp' },
+    { label: 'X-Frame',        key: 'xFrameOptions' },
+    { label: 'X-Content-Type', key: 'xContentTypeOptions' },
+    { label: 'Referrer Policy',key: 'referrerPolicy' },
+  ].map(h => `
+    <div class="header-pill ${sh[h.key] ? 'ok' : 'fail'}">
+      <div class="h-dot"></div>${h.label}
+    </div>
+  `).join('');
+
+  // ─ Issues list ────────────────────────────────────
+  const issues = integrity ? (integrity.issues || []) : [];
+  const issuesHTML = issues.length === 0
+    ? `<div class="no-issues">✓ No security issues detected</div>`
+    : issues.map(i => `
+        <div class="issue-row">
+          <div class="issue-dot"></div>
+          <div class="issue-text">${i}</div>
+        </div>
+      `).join('');
+
+  container.innerHTML = `
+    <div class="content">
+      <!-- Protocol + connection bar -->
+      <div class="url-bar" style="margin-bottom:10px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${isSecure ? '#7fc8a9' : '#b06060'}" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span class="url-text" style="color:${isSecure ? '#5a9e82' : '#9e5a5a'}">
+          ${isSecure ? 'Connection Secure' : 'Connection Not Fully Secure'}
+        </span>
+        <span class="protocol-badge" style="margin-left:auto;flex-shrink:0">${integrity ? (integrity.protocol || 'HTTPS') : 'N/A'}</span>
+      </div>
+
+      <!-- Threat Shield Banner -->
+      <div class="section-label" style="display:flex;justify-content:space-between;">
+        Database Shield
+        <span style="color:#555;font-size:9px;font-weight:400;text-transform:none;letter-spacing:0;">
+          ${dbInfo ? `${(dbInfo.count / 1000).toFixed(0)}k records (24h)` : 'No DB'}
+        </span>
+      </div>
+      <div class="threat-banner ${threat && threat.blacklisted ? 'warn' : 'safe'}">
+        <div class="threat-banner-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${threat && threat.blacklisted ? '#b06060' : '#7fc8a9'}" stroke-width="2">
+            ${threat && threat.blacklisted 
+                ? '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
+                : '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>'
+            }
+          </svg>
+        </div>
+        <div class="threat-banner-text">
+          <div class="threat-title">${threat && threat.blacklisted ? 'Threat Detected' : 'No Database Threats'}</div>
+          <div class="threat-desc">
+            ${threat && threat.blacklisted 
+               ? `Domain matched in ${threat.source || 'blocklist'}. Phishing risk high.`
+               : 'Domain is not listed in offline threat databases.'}
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Inference Banner -->
+      ${ai ? `
+      <div class="section-label">AI Zero-Day Inference</div>
+      <div class="ai-banner ${ai.riskLevel === 'high' ? 'warn' : 'safe'}">
+        <div class="threat-banner-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="threat-banner-text">
+          <div class="threat-title">${ai.riskLevel === 'high' ? 'Zero-Day Detected' : 'No Anomalies Detected'} (Score: ${ai.score})</div>
+          <div class="threat-desc">${ai.reason}</div>
+        </div>
+      </div>
+      ` : ''}
+
+      <!-- Certificate -->
+      <div class="section-label">TLS Certificate</div>
+      <div class="cert-card">
+        <div class="cert-card-header">
+          <div class="cert-card-title">Certificate Details</div>
+          <div class="cert-secure-badge ${isSecure && cert ? 'ok' : 'err'}">
+            ${isSecure && cert ? 'Valid' : 'Issue Detected'}
+          </div>
+        </div>
+        ${certHTML}
+      </div>
+
+      <!-- Security headers -->
+      <div class="section-label">Security Headers</div>
+      <div class="headers-grid">${headerPills}</div>
+
+      <!-- Issues -->
+      ${issues.length > 0 ? '<div class="section-label">Issues Found</div>' : ''}
+      <div class="issues-list">${issuesHTML}</div>
+    </div>
+  `;
+}
+
+// ── Load Security data when popup opens ───────────────────────
+// Runs immediately (data may already be in storage from background.js)
+chrome.tabs.query({ active: true, currentWindow: true }, (tabsForSec) => {
+  const tab = tabsForSec[0];
+  if (!tab) return;
+
+  function loadSecurityData() {
+    Promise.all([
+      new Promise(r => chrome.runtime.sendMessage({ action: 'getIntegrityReport', tabId: tab.id }, r)),
+      new Promise(r => chrome.runtime.sendMessage({ action: 'getThreatReport', tabId: tab.id }, r)),
+      new Promise(r => chrome.runtime.sendMessage({ action: 'getAIReport', tabId: tab.id }, r))
+    ]).then(([integRes, threatRes, aiRes]) => {
+      const integrity = integRes?.data || null;
+      const threat    = threatRes?.threat || null;
+      const dbInfo    = threatRes?.dbInfo || null;
+      const ai        = aiRes?.data || null;
+
+      if (integrity) {
+        renderSecurity({ integrity, threat, ai, dbInfo });
+      } else {
+        // Data missing (maybe popup opened on an already-loaded tab before the extension ran)
+        // Trigger a manual audit and leave the skeleton loader up
+        chrome.runtime.sendMessage({ action: 'runAudit', tabId: tab.id });
+      }
+    });
+  }
+
+  // Initial load
+  loadSecurityData();
+
+  // Also listen for changes (since checkDomainThreat, runIntegrityAudit, runZeroDayInference are async)
+  const integKey  = `aura_integrity_${tab.id}`;
+  const threatKey = `aura_threat_${tab.id}`;
+  const aiKey     = `aura_ai_${tab.id}`;
+  
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && (changes[integKey] || changes[threatKey] || changes[aiKey])) {
+      loadSecurityData();
+    }
+  });
+});

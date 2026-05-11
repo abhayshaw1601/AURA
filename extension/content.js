@@ -305,8 +305,178 @@ function showDownloadToast() {
 }
 
 // ── Message listener — receives showDownloadAlert from background.js ──
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'showDownloadAlert') {
     showDownloadToast();
+  } else if (message.action === 'showThreatAlert') {
+    showThreatToast(message.domain, message.source);
+  } else if (message.action === 'showAIThreatAlert') {
+    showAIToast(message.domain, message.reason, message.score);
+  } else if (message.action === 'getPageContext') {
+    // Used by Phase 3 Zero-Day Inference
+    const text = document.body.innerText.substring(0, 15000);
+    sendResponse({ title: document.title, text });
   }
 });
+
+// ═══════════════════════════════════════════════════════════════════
+// ── Threat Audit Toast (Phase 2: Database Shield) ──────────────────
+// ═══════════════════════════════════════════════════════════════════
+
+function showThreatToast(domain, source) {
+  if (document.getElementById('aura-threat-toast-host')) return;
+
+  const host = document.createElement('div');
+  host.id = 'aura-threat-toast-host';
+  const shadow = host.attachShadow({ mode: 'open' });
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 2147483647;
+      width: 320px;
+      background: rgba(15, 15, 15, 0.92);
+      border: 1px solid #2a2a2a;
+      border-left: 3px solid #b06060;
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      animation: toast-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)   scale(1);    }
+    }
+    .toast-icon {
+      width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
+      color: #b06060;
+    }
+    .toast-title {
+      font-size: 12px; font-weight: 600;
+      color: #e5e5e5; margin-bottom: 4px;
+    }
+    .toast-body {
+      font-size: 11.5px; line-height: 1.55;
+      color: #737373;
+    }
+    .toast-close {
+      position: absolute; top: 10px; right: 12px;
+      background: none; border: none; cursor: pointer;
+      color: #525252; font-size: 14px; line-height: 1;
+      padding: 0;
+    }
+    .toast-close:hover { color: #a3a3a3; }
+  `;
+
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.setAttribute('role', 'alert');
+  toast.innerHTML = `
+    <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+    <div>
+      <div class="toast-title">Aura — Threat Detected</div>
+      <div class="toast-body">
+        <strong>${domain}</strong> is flagged in the offline database (${source}). High risk of phishing.
+      </div>
+    </div>
+    <button class="toast-close" id="toast-dismiss" aria-label="Dismiss">✕</button>
+  `;
+
+  shadow.appendChild(style);
+  shadow.appendChild(toast);
+  (document.body || document.documentElement).appendChild(host);
+
+  const dismiss = () => host.remove();
+  shadow.getElementById('toast-dismiss').addEventListener('click', dismiss);
+  setTimeout(dismiss, 10000); // 10s for critical threat
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ── AI Zero-Day Toast (Phase 3: AI Inference Engine) ───────────────
+// ═══════════════════════════════════════════════════════════════════
+
+function showAIToast(domain, reason, score) {
+  if (document.getElementById('aura-ai-toast-host')) return;
+
+  const host = document.createElement('div');
+  host.id = 'aura-ai-toast-host';
+  const shadow = host.attachShadow({ mode: 'open' });
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 2147483647;
+      width: 320px;
+      background: rgba(15, 15, 15, 0.92);
+      border: 1px solid #2a2a2a;
+      border-left: 3px solid #7e22ce;
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      animation: toast-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)   scale(1);    }
+    }
+    .toast-icon {
+      width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
+      color: #a855f7;
+    }
+    .toast-title {
+      font-size: 12px; font-weight: 600;
+      color: #e5e5e5; margin-bottom: 4px;
+    }
+    .toast-body {
+      font-size: 11.5px; line-height: 1.55;
+      color: #d8b4fe;
+    }
+    .toast-close {
+      position: absolute; top: 10px; right: 12px;
+      background: none; border: none; cursor: pointer;
+      color: #525252; font-size: 14px; line-height: 1;
+      padding: 0;
+    }
+    .toast-close:hover { color: #a3a3a3; }
+  `;
+
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.setAttribute('role', 'alert');
+  toast.innerHTML = `
+    <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+    </svg>
+    <div>
+      <div class="toast-title">Aura AI — Suspicious Site (Score: ${score})</div>
+      <div class="toast-body">
+        <strong>${domain}</strong>: ${reason}
+      </div>
+    </div>
+    <button class="toast-close" id="toast-dismiss" aria-label="Dismiss">✕</button>
+  `;
+
+  shadow.appendChild(style);
+  shadow.appendChild(toast);
+  (document.body || document.documentElement).appendChild(host);
+
+  const dismiss = () => host.remove();
+  shadow.getElementById('toast-dismiss').addEventListener('click', dismiss);
+  setTimeout(dismiss, 12000);
+}

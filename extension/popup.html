@@ -131,6 +131,207 @@
     .idle-title { font-size: 12.5px; font-weight: 600; color: #a3a3a3; }
     .idle-sub   { font-size: 11.5px; color: #6b6b6b; line-height: 1.5; max-width: 240px; }
 
+    /* ─── Tab Bar ─── */
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid #1a1a1a;
+      padding: 0 16px;
+      gap: 2px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 9px 0;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #444;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab-btn:hover    { color: #888; }
+    .tab-btn.active   { color: #d4d4d4; border-bottom-color: #d4d4d4; }
+    .tab-panel        { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ─── Security Tab ─── */
+    .cert-card {
+      background: #111;
+      border: 1px solid #1f1f1f;
+      border-radius: 10px;
+      padding: 13px 14px;
+      margin-bottom: 10px;
+    }
+    .cert-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .cert-card-title {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #555;
+    }
+    .cert-secure-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 99px;
+      border: 1px solid #2a2a2a;
+      color: #737373;
+    }
+    .cert-secure-badge.ok  { color: #7fc8a9; border-color: #1e3a30; background: rgba(127,200,169,0.06); }
+    .cert-secure-badge.err { color: #b06060; border-color: #3a1e1e; background: rgba(176,96,96,0.06); }
+
+    .cert-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 7px 0;
+      border-top: 1px solid #181818;
+    }
+    .cert-row:first-of-type { border-top: none; }
+    .cert-key {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #484848;
+      min-width: 72px;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+    .cert-val {
+      font-size: 11.5px;
+      color: #a0a0a0;
+      line-height: 1.45;
+      word-break: break-all;
+    }
+    .cert-val.expiry-ok   { color: #7fc8a9; }
+    .cert-val.expiry-warn { color: #c8a87f; }
+    .cert-val.expiry-err  { color: #b06060; }
+
+    /* Security header pills grid */
+    .headers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    .header-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 9px;
+      border-radius: 7px;
+      background: #111;
+      border: 1px solid #1c1c1c;
+      font-size: 10px;
+      font-weight: 500;
+      color: #555;
+    }
+    .header-pill .h-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #2a2a2a;
+      flex-shrink: 0;
+    }
+    .header-pill.ok .h-dot { background: #7fc8a9; }
+    .header-pill.ok        { color: #7a9e8e; }
+    .header-pill.fail .h-dot { background: #8a4040; }
+    .header-pill.fail      { color: #6a4040; }
+
+    /* Issues list */
+    .issues-list { display: flex; flex-direction: column; gap: 4px; }
+    .issue-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 7px;
+      background: #0f0d0d;
+      border: 1px solid #261a1a;
+    }
+    .issue-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #7a3a3a;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+    .issue-text {
+      font-size: 11px;
+      color: #8a6060;
+      line-height: 1.45;
+    }
+    .no-issues {
+      font-size: 11.5px;
+      color: #4a7a62;
+      padding: 10px 0;
+      text-align: center;
+    }
+
+    /* Protocol badge */
+    .protocol-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: #141414;
+      border: 1px solid #202020;
+      font-size: 10px;
+      font-weight: 600;
+      color: #606060;
+      letter-spacing: 0.4px;
+    }
+
+    /* Threat Shield */
+    .threat-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #111;
+      border: 1px solid #1f1f1f;
+      margin-bottom: 15px;
+    }
+    .threat-banner.safe { border-color: #1e3a30; background: rgba(127,200,169,0.04); }
+    .threat-banner.warn { border-color: #3a1e1e; background: rgba(176,96,96,0.06); }
+    .threat-banner-icon { flex-shrink: 0; display: flex; }
+    .threat-banner-text { flex-grow: 1; }
+    .threat-title { font-size: 11px; font-weight: 600; color: #d4d4d4; margin-bottom: 2px; }
+    .threat-desc { font-size: 10.5px; color: #888; line-height: 1.4; }
+    .threat-banner.safe .threat-title { color: #7fc8a9; }
+    .threat-banner.warn .threat-title { color: #b06060; }
+
+    /* AI Inference Banner */
+    .ai-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #111;
+      border: 1px solid #1f1f1f;
+      margin-bottom: 15px;
+    }
+    .ai-banner.safe { border-color: #2e1a4a; background: rgba(168, 85, 247, 0.04); }
+    .ai-banner.warn { border-color: #4a1a3a; background: rgba(216, 180, 254, 0.06); }
+    .ai-banner.warn .threat-title { color: #d8b4fe; }
+    .ai-banner.safe .threat-title { color: #a855f7; }
+
+    /* Security scanning skeleton */
+    .sec-skeleton { display: flex; flex-direction: column; gap: 6px; }
+    .sec-skeleton-row { height: 36px; border-radius: 8px; }
+
     /* Footer */
     .footer {
       padding: 8px 16px; border-top: 1px solid #141414;
@@ -160,13 +361,33 @@
     </div>
   </div>
 
-  <!-- Main -->
-  <div id="main-content" class="content">
-    <div class="skeleton-base skeleton-url"></div>
-    <div class="skeleton-base skeleton-label"></div>
-    <div class="skeleton-base skeleton-row"></div>
-    <div class="skeleton-base skeleton-row"></div>
-    <div class="skeleton-base skeleton-row"></div>
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-privacy">Privacy</button>
+    <button class="tab-btn"        id="tab-security">Security</button>
+  </div>
+
+  <!-- Privacy Tab Panel -->
+  <div id="panel-privacy" class="tab-panel active">
+    <div id="main-content" class="content">
+      <div class="skeleton-base skeleton-url"></div>
+      <div class="skeleton-base skeleton-label"></div>
+      <div class="skeleton-base skeleton-row"></div>
+      <div class="skeleton-base skeleton-row"></div>
+      <div class="skeleton-base skeleton-row"></div>
+    </div>
+  </div>
+
+  <!-- Security Tab Panel -->
+  <div id="panel-security" class="tab-panel">
+    <div id="security-content" class="content">
+      <div class="sec-skeleton">
+        <div class="skeleton-base sec-skeleton-row"></div>
+        <div class="skeleton-base sec-skeleton-row"></div>
+        <div class="skeleton-base sec-skeleton-row"></div>
+        <div class="skeleton-base sec-skeleton-row"></div>
+      </div>
+    </div>
   </div>
 
   <!-- Footer -->
