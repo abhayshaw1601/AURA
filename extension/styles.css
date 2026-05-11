@@ -1,5 +1,248 @@
-/* Global styles if needed outside shadow DOM */
-.aura-highlight-misinfo {
-  background-color: rgba(254, 243, 199, 0.4) !important;
-  transition: background-color 0.3s ease;
+/* Aura Natural/Ambient Design System */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --bg-color: #F4F1DE;
+  --text-primary: #3D405B;
+  --text-secondary: rgba(61, 64, 91, 0.7);
+  --sage-green: #81B29A;
+  --muted-coral: #E07A5F;
+  --terracotta: #AB5C48;
+  --border-subtle: rgba(61, 64, 91, 0.1);
+  --shadow-soft: 0 10px 30px rgba(61, 64, 91, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  width: 360px;
+  min-height: 450px;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-color);
+  color: var(--text-primary);
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Grainy Texture Overlay */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  z-index: 10;
+}
+
+.container {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 99px;
+  border: 1px solid var(--text-primary);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-primary);
+}
+
+/* Main Content Area */
+#main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Empty State / Inactive */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  text-align: center;
+}
+
+.hand-drawn-icon {
+  width: 120px;
+  height: 120px;
+  color: var(--text-primary);
+  opacity: 0.2;
+  margin-bottom: 24px;
+}
+
+.empty-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.empty-sub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 240px;
+}
+
+/* Summary Cards */
+.summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summary-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  transition: transform 0.2s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+}
+
+.card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(129, 178, 154, 0.1);
+  color: var(--sage-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+}
+
+.card-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+/* Warning State */
+.summary-card.warning {
+  background: var(--muted-coral);
+  border: 1px solid var(--terracotta);
+}
+
+.summary-card.warning .card-icon {
+  background: rgba(171, 92, 72, 0.1);
+  color: var(--terracotta);
+}
+
+.summary-card.warning .card-label,
+.summary-card.warning .card-text {
+  color: var(--terracotta);
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--text-primary);
+  color: #FFFFFF;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+/* Footer */
+.footer {
+  padding: 24px 0 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.footer-text {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.footer-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--sage-green);
+}
+
+/* Loading Animation */
+.loading-pulse {
+  animation: loadingPulse 1.5s infinite ease-in-out;
+}
+
+@keyframes loadingPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
