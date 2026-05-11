@@ -309,6 +309,16 @@ async function runZeroDayInference(tabId, url, integrityReport) {
         reason: data.reason || 'AI identified zero-day phishing patterns.',
         score: data.score
       }).catch(() => {});
+
+      // Open an OS-level notification so it is never hidden
+      chrome.notifications.create(`aura_ai_${tabId}_${Date.now()}`, {
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+        title: 'Aura AI — Suspicious Site',
+        message: `${hostname}: ${data.reason || 'Potential zero-day phishing patterns detected.'}`,
+        priority: 2,
+        requireInteraction: true
+      });
     } else {
       console.log(`[Aura AI] Passed zero-day check (Score: ${data.score})`);
     }
@@ -495,6 +505,16 @@ async function checkDomainThreat(tabId, pageUrl) {
         domain: hostname,
         source: 'StevenBlack/hosts',
       }).catch(() => {}); // silently ignore if content script not present
+
+      // Open an OS-level notification so it is never hidden
+      chrome.notifications.create(`aura_threat_${tabId}_${Date.now()}`, {
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+        title: 'Aura — Threat Detected',
+        message: `${hostname} is flagged in the blacklist database. High risk of phishing.`,
+        priority: 2,
+        requireInteraction: true
+      });
     } else {
       console.log(`[Aura Shield] ✓ Clean: ${hostname}`);
     }

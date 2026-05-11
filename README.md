@@ -17,7 +17,8 @@ Aura operates as an ambient security layer within your browser. It monitors your
 * **Certificate & Security Audit**: Inspects TLS certificates for expiry, SNI mismatches, and audits HTTP security headers (HSTS, CSP, X-Frame-Options) to ensure connection integrity.
 * **Privacy Sense**: Detects privacy policies and terms of service pages, generating a concise, plain-English summary of critical data retention and selling practices.
 * **Trust Shield**: Scans social media feeds to detect urgency bias, tone mismatches, and metadata inconsistencies that indicate potential misinformation.
-* **Ambient UI**: Utilizes the Shadow DOM to inject subtle visual indicators (such as pulsing icons and glassmorphic panels) that alert users without disrupting their flow.
+* **Download Audit**: Monitors active downloads and cross-references their origin domains against the user's current browsing flow. Emits subtle ambient toasts if a cross-domain or injected download is detected.
+* **Ambient UI**: Utilizes the Shadow DOM to inject subtle visual indicators (such as pulsing icons, glassmorphic panels, and non-intrusive toasts) that alert users without disrupting their flow.
 
 ---
 
@@ -33,10 +34,10 @@ graph TB
     subgraph Client [Browser Extension]
         direction TB
         CS[Content Script: DOM Parser & UI Injector]
-        BG[Service Worker: API Orchestrator & Cache Manager]
+        BG[Service Worker: API Orchestrator & Downloads]
         PU[Extension Popup: Dashboard Panel]
         ST[(Local Storage: Cache)]
-        SD[Shadow DOM: Ambient Alerts]
+        SD[Shadow DOM: Ambient Alerts & Toasts]
     end
 
     subgraph Server [Next.js Backend]
@@ -56,6 +57,7 @@ graph TB
     BG -->|Sync| TL
     BG -->|Audit| CC
     BG -->|Analyze| JS
+    BG -->|Intercept Download| BG
     JS -->|Prompt| GM
     SR -->|Prompt| GM
     TS -->|Prompt| GM
@@ -63,7 +65,8 @@ graph TB
     Server -->|Result| BG
     BG -->|Store| ST
     BG -->|Update Badge| PU
-    CS -->|Render| SD
+    BG -->|Trigger Alert| CS
+    CS -->|Render Toast/UI| SD
 ```
 
 </details>
@@ -109,6 +112,25 @@ sequenceDiagram
     Ext->>API: POST /api/summarize
     API-->>Ext: Return JSON summary
     Ext->>User: Update glassmorphic hover panel
+```
+
+### 3. Non-Blocking Download Audit
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Ext as Background Worker
+    participant Content as Content Script
+    
+    User->>Ext: Triggers a file download
+    Ext->>Ext: Intercept chrome.downloads.onCreated
+    Ext->>Ext: Compare download source vs current tab domain
+    alt Domain Mismatch Detected
+        Ext->>Content: Send 'showDownloadAlert' message
+        Content->>User: Inject non-intrusive Shadow DOM Toast
+    else Domain Matches
+        Ext->>Ext: Allow silently
+    end
 ```
 
 ---

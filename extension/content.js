@@ -91,7 +91,7 @@ function injectAmbientUI() {
       transform: translateY(10px) scale(0.95);
       pointer-events: none;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid rgba(61, 64, 91, 0.15);
+      border: 1px solid rgba(17, 24, 39, 0.15);
       transform-origin: bottom right;
     }
     .aura-container:hover .aura-summary-panel {
@@ -103,7 +103,7 @@ function injectAmbientUI() {
       font-weight: 600;
       margin-bottom: 12px;
       font-size: 15px;
-      color: #3D405B;
+      color: #111827;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -113,7 +113,7 @@ function injectAmbientUI() {
       padding-left: 20px;
       font-size: 13.5px;
       line-height: 1.5;
-      color: rgba(61, 64, 91, 0.8);
+      color: rgba(17, 24, 39, 0.8);
     }
     .aura-list li {
       margin-bottom: 8px;
@@ -332,47 +332,49 @@ function showThreatToast(domain, source) {
 
   const style = document.createElement('style');
   style.textContent = `
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
     .toast {
       position: fixed;
-      top: 24px;
+      bottom: 24px;
       right: 24px;
       z-index: 2147483647;
       width: 320px;
-      background: rgba(15, 15, 15, 0.92);
-      border: 1px solid #2a2a2a;
-      border-left: 3px solid #b06060;
+      background: #F4F1DE;
+      border: 1px solid rgba(171, 92, 72, 0.3);
+      border-left: 4px solid #E07A5F;
       border-radius: 10px;
       padding: 14px 16px;
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       animation: toast-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
     @keyframes toast-in {
-      from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+      from { opacity: 0; transform: translateY(12px) scale(0.97); }
       to   { opacity: 1; transform: translateY(0)   scale(1);    }
     }
     .toast-icon {
       width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
-      color: #b06060;
+      color: #E07A5F;
     }
     .toast-title {
       font-size: 12px; font-weight: 600;
-      color: #e5e5e5; margin-bottom: 4px;
+      color: #111827; margin-bottom: 4px;
     }
     .toast-body {
       font-size: 11.5px; line-height: 1.55;
-      color: #737373;
+      color: #AB5C48;
     }
     .toast-close {
       position: absolute; top: 10px; right: 12px;
       background: none; border: none; cursor: pointer;
-      color: #525252; font-size: 14px; line-height: 1;
+      color: rgba(171, 92, 72, 0.5); font-size: 14px; line-height: 1;
       padding: 0;
     }
-    .toast-close:hover { color: #a3a3a3; }
+    .toast-close:hover { color: #AB5C48; }
   `;
 
   const toast = document.createElement('div');
@@ -413,47 +415,49 @@ function showAIToast(domain, reason, score) {
 
   const style = document.createElement('style');
   style.textContent = `
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
     .toast {
       position: fixed;
-      top: 24px;
+      bottom: 24px;
       right: 24px;
       z-index: 2147483647;
       width: 320px;
-      background: rgba(15, 15, 15, 0.92);
-      border: 1px solid #2a2a2a;
-      border-left: 3px solid #7e22ce;
+      background: #F4F1DE;
+      border: 1px solid rgba(171, 92, 72, 0.3);
+      border-left: 4px solid #E07A5F;
       border-radius: 10px;
       padding: 14px 16px;
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       animation: toast-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
     @keyframes toast-in {
-      from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+      from { opacity: 0; transform: translateY(12px) scale(0.97); }
       to   { opacity: 1; transform: translateY(0)   scale(1);    }
     }
     .toast-icon {
       width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
-      color: #a855f7;
+      color: #E07A5F;
     }
     .toast-title {
       font-size: 12px; font-weight: 600;
-      color: #e5e5e5; margin-bottom: 4px;
+      color: #111827; margin-bottom: 4px;
     }
     .toast-body {
       font-size: 11.5px; line-height: 1.55;
-      color: #d8b4fe;
+      color: #AB5C48;
     }
     .toast-close {
       position: absolute; top: 10px; right: 12px;
       background: none; border: none; cursor: pointer;
-      color: #525252; font-size: 14px; line-height: 1;
+      color: rgba(171, 92, 72, 0.5); font-size: 14px; line-height: 1;
       padding: 0;
     }
-    .toast-close:hover { color: #a3a3a3; }
+    .toast-close:hover { color: #AB5C48; }
   `;
 
   const toast = document.createElement('div');
