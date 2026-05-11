@@ -216,3 +216,97 @@ function detectMisinformation() {
 }
 
 detectMisinformation();
+
+// ═══════════════════════════════════════════════════════════════════
+// ── Download Audit Toast (Phase: Ambient Alert) ────────────────────
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * Injects a calm, non-intrusive Shadow DOM toast into the page.
+ * Constraint: Must be subtle and "ambient" — not alarming.
+ */
+function showDownloadToast() {
+  // Avoid duplicate toasts
+  if (document.getElementById('aura-download-toast-host')) return;
+
+  const host = document.createElement('div');
+  host.id = 'aura-download-toast-host';
+  const shadow = host.attachShadow({ mode: 'open' });
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      right: 24px;
+      z-index: 2147483647;
+      width: 320px;
+      background: rgba(15, 15, 15, 0.92);
+      border: 1px solid #2a2a2a;
+      border-left: 3px solid #92400E;
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      animation: toast-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateY(12px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)   scale(1);    }
+    }
+    .toast-icon {
+      width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
+      color: #a16207;
+    }
+    .toast-title {
+      font-size: 12px; font-weight: 600;
+      color: #e5e5e5; margin-bottom: 4px;
+    }
+    .toast-body {
+      font-size: 11.5px; line-height: 1.55;
+      color: #737373;
+    }
+    .toast-close {
+      position: absolute; top: 10px; right: 12px;
+      background: none; border: none; cursor: pointer;
+      color: #525252; font-size: 14px; line-height: 1;
+      padding: 0;
+    }
+    .toast-close:hover { color: #a3a3a3; }
+  `;
+
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.setAttribute('role', 'alert');
+  toast.innerHTML = `
+    <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    <div>
+      <div class="toast-title">Aura — Download Notice</div>
+      <div class="toast-body">
+        This download's source metadata is inconsistent with your browsing flow. Proceed with caution.
+      </div>
+    </div>
+    <button class="toast-close" id="toast-dismiss" aria-label="Dismiss">✕</button>
+  `;
+
+  shadow.appendChild(style);
+  shadow.appendChild(toast);
+  (document.body || document.documentElement).appendChild(host);
+
+  // Auto-dismiss after 8 seconds
+  const dismiss = () => host.remove();
+  shadow.getElementById('toast-dismiss').addEventListener('click', dismiss);
+  setTimeout(dismiss, 8000);
+}
+
+// ── Message listener — receives showDownloadAlert from background.js ──
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.action === 'showDownloadAlert') {
+    showDownloadToast();
+  }
+});
