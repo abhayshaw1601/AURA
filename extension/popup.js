@@ -190,17 +190,17 @@ function renderDownloadAlert(url) {
   banner.style.cssText = `
     margin: 14px 16px 0;
     padding: 10px 12px;
-    background: #111;
-    border: 1px solid #2a2a2a;
-    border-left: 3px solid #92400E;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-left: 4px solid #ef4444;
     border-radius: 8px;
     font-size: 11.5px;
     line-height: 1.5;
-    color: #a3a3a3;
+    color: #991b1b;
   `;
   banner.innerHTML = `
-    <div style="font-weight:600;color:#e5e5e5;margin-bottom:3px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Download Notice</div>
-    <div style="color:#737373;">${hostname} — source metadata inconsistent with browsing flow.</div>
+    <div style="font-weight:600;color:#111827;margin-bottom:3px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Download Notice</div>
+    <div style="color:#4b5563;">${hostname} — source metadata inconsistent with browsing flow.</div>
   `;
 
   const mainContent = document.getElementById('main-content');

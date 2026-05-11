@@ -4,13 +4,15 @@
   <meta charset="UTF-8" />
   <title>Aura</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       width: 340px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: #0a0a0a;
-      color: #e5e5e5;
+      font-family: 'Inter', sans-serif;
+      background: #f5f5dc;
+      color: #111827;
     }
 
     /* ─── Header ─── */
@@ -19,35 +21,35 @@
       align-items: center;
       justify-content: space-between;
       padding: 14px 16px;
-      border-bottom: 1px solid #1f1f1f;
+      border-bottom: 1px solid #e5e7eb;
     }
     .brand { display: flex; align-items: center; gap: 9px; }
     .brand-icon {
       width: 30px; height: 30px; border-radius: 8px;
-      background: #181818; border: 1px solid #2a2a2a;
+      background: transparent; border: 1px solid #e5e7eb;
       display: flex; align-items: center; justify-content: center;
     }
-    .brand-icon svg { color: #e5e5e5; }
-    .brand-name { font-size: 14px; font-weight: 600; color: #f5f5f5; }
-    .brand-sub  { font-size: 10px; color: #525252; margin-top: 1px; }
+    .brand-icon svg { color: #374151; }
+    .brand-name { font-size: 14px; font-weight: 600; color: #111827; }
+    .brand-sub  { font-size: 10px; color: #6b7280; margin-top: 1px; }
 
     /* Status pill — monochromatic only */
     .status-pill {
       display: flex; align-items: center; gap: 5px;
       padding: 4px 9px; border-radius: 999px;
       font-size: 11px; font-weight: 500;
-      background: #181818; border: 1px solid #2a2a2a;
-      color: #a3a3a3;
+      background: transparent; border: 1px solid #e5e7eb;
+      color: #4b5563;
     }
     .status-dot {
       width: 6px; height: 6px; border-radius: 50%;
-      background: #525252;
+      background: #9ca3af;
     }
-    .status-pill.low  .status-dot { background: #d4d4d4; }
-    .status-pill.low  { color: #d4d4d4; }
-    .status-pill.med  .status-dot { background: #a3a3a3; }
-    .status-pill.high .status-dot { background: #737373; }
-    .status-pill.high { color: #737373; }
+    .status-pill.low  .status-dot { background: #10b981; }
+    .status-pill.low  { color: #059669; background: #d1fae5; border-color: #a7f3d0; }
+    .status-pill.med  .status-dot { background: #f59e0b; }
+    .status-pill.high .status-dot { background: #ef4444; }
+    .status-pill.high { color: #b91c1c; background: #fee2e2; border-color: #fecaca; }
     .status-pill.scanning .status-dot { background: #404040; animation: blink 1.2s infinite; }
 
     @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.2; } }
@@ -59,16 +61,16 @@
     .url-bar {
       display: flex; align-items: center; gap: 8px;
       padding: 8px 11px; border-radius: 8px;
-      background: #111; border: 1px solid #1f1f1f;
+      background: #f9fafb; border: 1px solid #e5e7eb;
       margin-bottom: 14px;
     }
-    .url-bar svg { color: #404040; flex-shrink: 0; }
-    .url-text { font-size: 11.5px; color: #737373; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .url-bar svg { color: #9ca3af; flex-shrink: 0; }
+    .url-text { font-size: 11.5px; color: #4b5563; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* Section label */
     .section-label {
       font-size: 10px; font-weight: 600; letter-spacing: 0.9px;
-      text-transform: uppercase; color: #555555; margin-bottom: 9px;
+      text-transform: uppercase; color: #6b7280; margin-bottom: 9px;
     }
 
     /* Summary rows */
@@ -80,25 +82,25 @@
       border: 1px solid transparent;
       transition: background 0.15s, border-color 0.15s;
     }
-    .summary-row:hover { background: #111; border-color: #1f1f1f; }
+    .summary-row:hover { background: #f9fafb; border-color: #e5e7eb; }
 
     .row-icon {
       width: 20px; height: 20px; flex-shrink: 0; margin-top: 0px;
-      color: #525252;
+      color: #6b7280;
     }
     .row-icon svg { width: 16px; height: 16px; }
 
     .row-text {
-      font-size: 12.5px; line-height: 1.55; color: #c4c4c4;
+      font-size: 12.5px; line-height: 1.55; color: #374151;
       font-weight: 400;
     }
     .row-label {
       font-size: 10px; font-weight: 600; letter-spacing: 0.4px;
-      text-transform: uppercase; color: #606060; margin-bottom: 2px;
+      text-transform: uppercase; color: #6b7280; margin-bottom: 2px;
     }
 
     /* Divider */
-    .divider { height: 1px; background: #1a1a1a; margin: 2px 0; }
+    .divider { height: 1px; background: #e5e7eb; margin: 2px 0; }
 
     /* Skeleton shimmer */
     @keyframes shimmer {
@@ -106,8 +108,8 @@
       100% { background-position: 340px 0; }
     }
     .skeleton-base {
-      background: #1a1a1a;
-      background-image: linear-gradient(90deg, #1a1a1a 0px, #242424 80px, #1a1a1a 160px);
+      background: #f3f4f6;
+      background-image: linear-gradient(90deg, #f3f4f6 0px, #ffffff 80px, #f3f4f6 160px);
       background-size: 340px 100%;
       animation: shimmer 1.4s infinite linear;
       border-radius: 6px;
@@ -124,19 +126,12 @@
     }
     .idle-icon {
       width: 36px; height: 36px; border-radius: 10px;
-      background: #111; border: 1px solid #1f1f1f;
+      background: transparent; border: 1px solid #e5e7eb;
       display: flex; align-items: center; justify-content: center;
-      color: #404040;
+      color: #6b7280;
     }
-    .idle-title { font-size: 12.5px; font-weight: 600; color: #a3a3a3; }
-    .idle-sub   { font-size: 11.5px; color: #6b6b6b; line-height: 1.5; max-width: 240px; }
-
-    /* Footer */
-    .footer {
-      padding: 8px 16px; border-top: 1px solid #141414;
-      display: flex; align-items: center; justify-content: center; gap: 5px;
-    }
-    .footer-text { font-size: 10px; color: #4b4b4b; }
+    .idle-title { font-size: 12.5px; font-weight: 600; color: #111827; }
+    .idle-sub   { font-size: 11.5px; color: #6b7280; line-height: 1.5; max-width: 240px; }
   </style>
 </head>
 <body>
@@ -167,13 +162,6 @@
     <div class="skeleton-base skeleton-row"></div>
     <div class="skeleton-base skeleton-row"></div>
     <div class="skeleton-base skeleton-row"></div>
-  </div>
-
-  <!-- Footer -->
-  <div class="footer">
-    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
-    <span class="footer-text">Gemini 2.5 Flash Lite</span>
-    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
   </div>
 
   <script src="popup.js"></script>

@@ -19,14 +19,14 @@ function injectAmbientUI() {
   // Add styles
   const style = document.createElement('style');
   style.textContent = `
-    /* System font stack — avoids CSP violations */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     
     .aura-container {
       position: fixed;
       bottom: 24px;
       right: 24px;
       z-index: 2147483647;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-family: 'Inter', sans-serif;
     }
 
     .aura-pulse-icon {
@@ -235,22 +235,24 @@ function showDownloadToast() {
 
   const style = document.createElement('style');
   style.textContent = `
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
     .toast {
       position: fixed;
       bottom: 90px;
       right: 24px;
       z-index: 2147483647;
       width: 320px;
-      background: rgba(15, 15, 15, 0.92);
-      border: 1px solid #2a2a2a;
-      border-left: 3px solid #92400E;
+      background: #f5f5dc;
+      border: 1px solid #e5e7eb;
+      border-left: 4px solid #ef4444; /* Standard Red */
       border-radius: 10px;
       padding: 14px 16px;
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       animation: toast-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
     @keyframes toast-in {
@@ -259,23 +261,23 @@ function showDownloadToast() {
     }
     .toast-icon {
       width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
-      color: #a16207;
+      color: #ef4444;
     }
     .toast-title {
       font-size: 12px; font-weight: 600;
-      color: #e5e5e5; margin-bottom: 4px;
+      color: #111827; margin-bottom: 4px;
     }
     .toast-body {
       font-size: 11.5px; line-height: 1.55;
-      color: #737373;
+      color: #4b5563;
     }
     .toast-close {
       position: absolute; top: 10px; right: 12px;
       background: none; border: none; cursor: pointer;
-      color: #525252; font-size: 14px; line-height: 1;
+      color: #9ca3af; font-size: 14px; line-height: 1;
       padding: 0;
     }
-    .toast-close:hover { color: #a3a3a3; }
+    .toast-close:hover { color: #4b5563; }
   `;
 
   const toast = document.createElement('div');
