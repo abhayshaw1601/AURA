@@ -1,35 +1,22 @@
-// popup.js
+// Aura Natural/Ambient Popup Logic
 
-// Lucide SVG icons (inline, no external dependency)
 const ICONS = {
-  // Data selling → share-2
-  sell: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+  sell: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    <path d="M12 8v4M12 16h.01"/>
   </svg>`,
-  // Retention → clock
-  retain: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  retain: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
   </svg>`,
-  // User rights → user-check
-  rights: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  rights: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
     <circle cx="12" cy="7" r="4"/>
-    <polyline points="16 11 18 13 22 9"/>
   </svg>`,
-  // Globe
-  globe: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <line x1="2" y1="12" x2="22" y2="12"/>
-    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+  idle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
   </svg>`,
-  // Alert for error
-  alert: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  error: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-  </svg>`,
-  // Shield for idle
-  shield: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
   </svg>`
 };
 
@@ -39,35 +26,45 @@ const ROW_META = [
   { label: 'User Rights',  icon: ICONS.rights },
 ];
 
-const STATUS_LABELS = { low: 'Safe', med: 'Caution', high: 'Risky', scanning: 'Scanning' };
+const STATUS_LABELS = { low: 'Safe', med: 'Caution', high: 'Risky', scanning: 'Listening', inactive: 'Inactive' };
 
 function setStatus(level) {
-  const pill = document.getElementById('status-pill');
+  const badge = document.getElementById('status-badge');
   const text = document.getElementById('status-text');
-  pill.className = `status-pill ${level}`;
+  
+  // Reset styles
+  badge.style.borderColor = 'var(--text-primary)';
+  badge.style.color = 'var(--text-primary)';
+
+  if (level === 'low') {
+    badge.style.borderColor = 'var(--sage-green)';
+    badge.style.color = 'var(--sage-green)';
+  } else if (level === 'med' || level === 'high') {
+    badge.style.borderColor = 'var(--terracotta)';
+    badge.style.color = 'var(--terracotta)';
+  }
+
   text.textContent = STATUS_LABELS[level] || level;
 }
 
-function renderIdle(hostname) {
-  setStatus('scanning');
-  document.getElementById('status-text').textContent = 'Inactive';
+function renderIdle() {
+  setStatus('inactive');
   document.getElementById('main-content').innerHTML = `
-    <div class="idle-state">
-      <div class="idle-icon">${ICONS.shield}</div>
-      <div class="idle-title">No policy page detected</div>
-      <div class="idle-sub">Navigate to a Privacy Policy or Terms page for Aura analysis.</div>
+    <div class="empty-state">
+      <div class="hand-drawn-icon">${ICONS.idle}</div>
+      <h2 class="empty-title">Resting</h2>
+      <p class="empty-sub">Aura is currently inactive. Navigate to a privacy policy or terms page to begin.</p>
     </div>
   `;
 }
 
-function renderLoading(hostname) {
+function renderLoading() {
+  setStatus('scanning');
   document.getElementById('main-content').innerHTML = `
-    <div class="content">
-      <div class="skeleton-base skeleton-url"></div>
-      <div class="skeleton-base skeleton-label"></div>
-      <div class="skeleton-base skeleton-row"></div>
-      <div class="skeleton-base skeleton-row"></div>
-      <div class="skeleton-base skeleton-row"></div>
+    <div class="empty-state loading-pulse">
+      <div class="hand-drawn-icon">${ICONS.idle}</div>
+      <h2 class="empty-title">Listening...</h2>
+      <p class="empty-sub">Aura is analyzing the privacy landscape of this page.</p>
     </div>
   `;
 }
@@ -77,25 +74,28 @@ function renderResult(hostname, riskLevel, summary) {
 
   const rows = ROW_META.map((meta, i) => {
     const text = (summary && summary[i]) ? summary[i] : '—';
-    // Strip any leading label like "Data Selling:" that Gemini might still include
     const clean = text.replace(/^(Data Selling|Retention|User Rights)\s*[:–-]\s*/i, '').trim();
+    
+    // Determine if this card should have a warning style
+    const isWarning = (riskLevel === 'med' && i === 1) || (riskLevel === 'high'); // Simplified logic for demo
+    
     return `
-      <div class="summary-row">
-        <div class="row-icon">${meta.icon}</div>
-        <div>
-          <div class="row-label">${meta.label}</div>
-          <div class="row-text">${clean}</div>
+      <div class="summary-card ${isWarning ? 'warning' : ''}">
+        <div class="card-icon">${meta.icon}</div>
+        <div class="card-content">
+          <div class="card-label">${meta.label}</div>
+          <div class="card-text">${clean}</div>
         </div>
       </div>
-      ${i < 2 ? '<div class="divider"></div>' : ''}
     `;
   }).join('');
 
   document.getElementById('main-content').innerHTML = `
-    <div class="content">
-      <div class="url-bar">${ICONS.globe}<span class="url-text">${hostname}</span></div>
-      <div class="section-label">Privacy Summary</div>
-      <div class="summary-list">${rows}</div>
+    <div class="summary-list">
+      <div style="margin-bottom: 8px; text-align: left;">
+        <span class="card-label" style="opacity: 0.6;">Aura Analysis for ${hostname}</span>
+      </div>
+      ${rows}
     </div>
   `;
 }
@@ -103,10 +103,10 @@ function renderResult(hostname, riskLevel, summary) {
 function renderError() {
   setStatus('high');
   document.getElementById('main-content').innerHTML = `
-    <div class="idle-state">
-      <div class="idle-icon" style="color:#3f3f3f;">${ICONS.alert}</div>
-      <div class="idle-title">Analysis failed</div>
-      <div class="idle-sub">Backend unreachable. Ensure the Next.js server is running on port 3000.</div>
+    <div class="empty-state">
+      <div class="hand-drawn-icon" style="color: var(--terracotta); opacity: 0.5;">${ICONS.error}</div>
+      <h2 class="empty-title">Signal Lost</h2>
+      <p class="empty-sub">We couldn't reach the analysis server. Please check your connection.</p>
     </div>
   `;
 }
@@ -114,18 +114,18 @@ function renderError() {
 // ── Main ──
 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   const tab = tabs[0];
-  if (!tab || !tab.url) { renderIdle(''); return; }
+  if (!tab || !tab.url) { renderIdle(); return; }
 
   const url = tab.url;
   if (url.startsWith('chrome://') || url.startsWith('chrome-extension://') || url.startsWith('about:')) {
-    renderIdle(''); return;
+    renderIdle(); return;
   }
 
   let hostname = url;
   try { hostname = new URL(url).hostname; } catch (_) {}
 
   const isPrivacyPage = url.toLowerCase().includes('privacy') || url.toLowerCase().includes('terms');
-  if (!isPrivacyPage) { renderIdle(hostname); return; }
+  if (!isPrivacyPage) { renderIdle(); return; }
 
   const storageKey = `aura_result_${tab.id}`;
   let resolved = false;
@@ -138,14 +138,14 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   }
 
   // Show loading state
-  renderLoading(hostname);
+  renderLoading();
 
-  // 1. Read immediately — result might already be cached from a prior load
+  // 1. Read immediately
   chrome.storage.local.get([storageKey], (data) => {
     tryRender(data[storageKey]);
   });
 
-  // 2. Live listener — catches result if it lands while popup is open
+  // 2. Live listener
   chrome.storage.onChanged.addListener(function listener(changes, area) {
     if (area === 'local' && changes[storageKey]) {
       tryRender(changes[storageKey].newValue);
@@ -153,10 +153,10 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     }
   });
 
-  // 3. Polling fallback — catches result if onChanged fired before listener registered
+  // 3. Polling fallback
   let polls = 0;
   const poll = setInterval(() => {
-    if (resolved || polls >= 20) { clearInterval(poll); return; } // max 10s
+    if (resolved || polls >= 20) { clearInterval(poll); return; }
     polls++;
     chrome.storage.local.get([storageKey], (data) => {
       if (data[storageKey]) {
