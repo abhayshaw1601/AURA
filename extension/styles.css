@@ -1,0 +1,5 @@
+/* Global styles if needed outside shadow DOM */
+.aura-highlight-misinfo {
+  background-color: rgba(254, 243, 199, 0.4) !important;
+  transition: background-color 0.3s ease;
+}
