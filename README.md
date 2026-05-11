@@ -30,9 +30,14 @@ Aura is an ambient security layer built as a Chrome Extension. It silently monit
 
 ## Architecture Diagram
 
+![Aura Architecture](./architecture.png)
+
+<details>
+<summary>View detailed Mermaid diagram</summary>
+
 ```mermaid
 graph TB
-    subgraph Browser["🌐 Browser (Client)"]
+    subgraph Browser["Browser (Client)"]
         direction TB
         CS["Content Script<br/><i>content.js</i><br/>DOM Parser · UI Injector"]
         BG["Service Worker<br/><i>background.js</i><br/>API Orchestrator · Cache Manager"]
@@ -41,37 +46,34 @@ graph TB
         SD["Shadow DOM<br/><i>Pulse Icon · Glassmorphic Panel</i>"]
     end
 
-    subgraph Server["⚡ Server (Next.js on localhost:3000)"]
+    subgraph Server["Server (Next.js on localhost:3000)"]
         direction TB
         SR["/api/summarize<br/><i>Privacy Policy Analysis</i>"]
         TS["/api/trust-shield<br/><i>Misinformation Detection</i>"]
     end
 
-    subgraph AI["🤖 Google AI"]
+    subgraph AI["Google AI"]
         GM["Gemini 2.5 Flash Lite<br/><i>NLU · JSON Output</i>"]
     end
 
-    CS -->|"① Page text + URL"| BG
-    BG -->|"② Check cache"| ST
-    ST -->|"③a Cache HIT → return instantly"| BG
-    BG -->|"③b Cache MISS → POST /summarize"| SR
-    BG -->|"Social media text → POST /trust-shield"| TS
-    SR -->|"Prompt + text"| GM
-    TS -->|"Prompt + text"| GM
-    GM -->|"JSON {riskLevel, summary}"| SR
-    GM -->|"JSON {flagged, reason}"| TS
+    CS -->|"Page text + URL"| BG
+    BG -->|"Check cache"| ST
+    ST -->|"Cache HIT"| BG
+    BG -->|"Cache MISS POST /summarize"| SR
+    BG -->|"POST /trust-shield"| TS
+    SR -->|"Prompt"| GM
+    TS -->|"Prompt"| GM
+    GM -->|"JSON result"| SR
+    GM -->|"JSON result"| TS
     SR -->|"Result"| BG
     TS -->|"Result"| BG
-    BG -->|"④ Store result"| ST
-    BG -->|"⑤ Update badge dot"| PU
-    BG -->|"⑥ Update ambient icon"| CS
+    BG -->|"Store result"| ST
+    BG -->|"Update badge"| PU
     CS -->|"Render"| SD
-    ST -->|"onChanged / polling"| PU
-
-    style Browser fill:#0a0a0a,stroke:#1f1f1f,color:#e5e5e5
-    style Server fill:#0d0d0d,stroke:#1f1f1f,color:#e5e5e5
-    style AI fill:#0d0d0d,stroke:#1f1f1f,color:#e5e5e5
+    ST -->|"onChanged"| PU
 ```
+
+</details>
 
 ---
 
