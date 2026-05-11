@@ -66,8 +66,6 @@ function renderLoading(hostname) {
       <div class="skeleton-base skeleton-url"></div>
       <div class="skeleton-base skeleton-label"></div>
       <div class="skeleton-base skeleton-row"></div>
-      <div class="skeleton-base skeleton-row"></div>
-      <div class="skeleton-base skeleton-row"></div>
     </div>
   `;
 }
@@ -190,17 +188,17 @@ function renderDownloadAlert(url) {
   banner.style.cssText = `
     margin: 14px 16px 0;
     padding: 10px 12px;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    border-left: 4px solid #ef4444;
+    background: rgba(224, 122, 95, 0.1);
+    border: 1px solid rgba(171, 92, 72, 0.3);
+    border-left: 4px solid #E07A5F;
     border-radius: 8px;
     font-size: 11.5px;
     line-height: 1.5;
-    color: #991b1b;
+    color: #AB5C48;
   `;
   banner.innerHTML = `
-    <div style="font-weight:600;color:#111827;margin-bottom:3px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Download Notice</div>
-    <div style="color:#4b5563;">${hostname} — source metadata inconsistent with browsing flow.</div>
+    <div style="font-weight:600;color:#AB5C48;margin-bottom:3px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Download Notice</div>
+    <div style="color:#AB5C48;">${hostname} — source metadata inconsistent with browsing flow.</div>
   `;
 
   const mainContent = document.getElementById('main-content');

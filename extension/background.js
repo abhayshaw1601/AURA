@@ -46,7 +46,7 @@ function applyResult(tabId, data) {
   if (tabId) {
     chrome.storage.local.set({ [`aura_result_${tabId}`]: data });
     const riskLevel = data.riskLevel || 'low';
-    const badgeColors = { low: '#10b981', med: '#f59e0b', high: '#ef4444' }; // Green, Yellow, Red
+    const badgeColors = { low: '#81B29A', med: '#E07A5F', high: '#AB5C48' }; // Safe, Warning, Danger
     const badgeTexts  = { low: '✓',      med: '!',       high: '✕' };
     chrome.action.setBadgeText({ text: badgeTexts[riskLevel] || '?', tabId });
     chrome.action.setBadgeBackgroundColor({ color: badgeColors[riskLevel] || '#404040', tabId });
@@ -186,7 +186,7 @@ chrome.downloads.onCreated.addListener((downloadItem) => {
 
     // 2. Update the extension badge — alert indicator
     chrome.action.setBadgeText({ text: '✕' });
-    chrome.action.setBadgeBackgroundColor({ color: '#ef4444' }); // standard red
+    chrome.action.setBadgeBackgroundColor({ color: '#E07A5F' }); // Danger (Warm)
 
     // 3. Find the active tab and notify the content script to show toast
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

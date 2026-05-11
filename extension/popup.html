@@ -4,15 +4,15 @@
   <meta charset="UTF-8" />
   <title>Aura</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      width: 340px;
+      width: 360px;
       font-family: 'Inter', sans-serif;
-      background: #f5f5dc;
-      color: #111827;
+      background: #F4F1DE;
+      color: #3D405B;
     }
 
     /* ─── Header ─── */
@@ -20,118 +20,142 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 16px;
-      border-bottom: 1px solid #e5e7eb;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.4);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(10px);
     }
-    .brand { display: flex; align-items: center; gap: 9px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
     .brand-icon {
-      width: 30px; height: 30px; border-radius: 8px;
-      background: transparent; border: 1px solid #e5e7eb;
+      width: 36px; height: 36px; border-radius: 10px;
+      background: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(61, 64, 91, 0.06);
       display: flex; align-items: center; justify-content: center;
     }
-    .brand-icon svg { color: #374151; }
-    .brand-name { font-size: 14px; font-weight: 600; color: #111827; }
-    .brand-sub  { font-size: 10px; color: #6b7280; margin-top: 1px; }
+    .brand-icon svg { color: #E07A5F; width: 18px; height: 18px; }
+    
+    .brand-name { font-size: 16px; font-weight: 700; color: #3D405B; letter-spacing: -0.3px; }
+    .brand-sub  { font-size: 11px; color: #AB5C48; font-weight: 500; margin-top: 2px; }
 
-    /* Status pill — monochromatic only */
+    /* Status pill */
     .status-pill {
-      display: flex; align-items: center; gap: 5px;
-      padding: 4px 9px; border-radius: 999px;
-      font-size: 11px; font-weight: 500;
-      background: transparent; border: 1px solid #e5e7eb;
-      color: #4b5563;
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: 999px;
+      font-size: 12px; font-weight: 600;
+      background: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(61, 64, 91, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      color: #3D405B;
     }
     .status-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: #9ca3af;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #3D405B;
     }
-    .status-pill.low  .status-dot { background: #10b981; }
-    .status-pill.low  { color: #059669; background: #d1fae5; border-color: #a7f3d0; }
-    .status-pill.med  .status-dot { background: #f59e0b; }
-    .status-pill.high .status-dot { background: #ef4444; }
-    .status-pill.high { color: #b91c1c; background: #fee2e2; border-color: #fecaca; }
-    .status-pill.scanning .status-dot { background: #404040; animation: blink 1.2s infinite; }
+    .status-pill.low  .status-dot { background: #81B29A; box-shadow: 0 0 8px rgba(129, 178, 154, 0.6); }
+    .status-pill.low  { color: #81B29A; }
+    
+    .status-pill.med  .status-dot { background: #E07A5F; box-shadow: 0 0 8px rgba(224, 122, 95, 0.6); }
+    .status-pill.med  { color: #E07A5F; }
+    
+    .status-pill.high .status-dot { background: #AB5C48; box-shadow: 0 0 8px rgba(171, 92, 72, 0.6); }
+    .status-pill.high { color: #AB5C48; }
+    
+    .status-pill.scanning .status-dot { animation: blink 1.2s infinite; }
 
-    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.2; } }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
 
     /* ─── Content ─── */
-    .content { padding: 14px 16px; }
+    .content { padding: 20px; }
 
     /* URL bar */
     .url-bar {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 11px; border-radius: 8px;
-      background: #f9fafb; border: 1px solid #e5e7eb;
-      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; border-radius: 12px;
+      background: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(61, 64, 91, 0.04);
+      margin-bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
     }
-    .url-bar svg { color: #9ca3af; flex-shrink: 0; }
-    .url-text { font-size: 11.5px; color: #4b5563; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .url-bar svg { color: #81B29A; flex-shrink: 0; width: 16px; height: 16px; }
+    .url-text { font-size: 12px; font-weight: 500; color: #3D405B; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* Section label */
     .section-label {
-      font-size: 10px; font-weight: 600; letter-spacing: 0.9px;
-      text-transform: uppercase; color: #6b7280; margin-bottom: 9px;
+      font-size: 11px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; color: #AB5C48; margin-bottom: 12px;
+      padding-left: 4px;
     }
 
     /* Summary rows */
-    .summary-list { display: flex; flex-direction: column; gap: 2px; }
+    .summary-list { 
+      display: flex; flex-direction: column; 
+      background: #FFFFFF;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(61, 64, 91, 0.05);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
 
     .summary-row {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 11px 12px; border-radius: 8px;
-      border: 1px solid transparent;
-      transition: background 0.15s, border-color 0.15s;
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px;
+      background: transparent;
+      transition: background 0.2s;
     }
-    .summary-row:hover { background: #f9fafb; border-color: #e5e7eb; }
+    .summary-row:hover { background: #faf9f2; }
 
     .row-icon {
-      width: 20px; height: 20px; flex-shrink: 0; margin-top: 0px;
-      color: #6b7280;
+      width: 32px; height: 32px; flex-shrink: 0; 
+      background: #F4F1DE; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #E07A5F;
     }
     .row-icon svg { width: 16px; height: 16px; }
 
     .row-text {
-      font-size: 12.5px; line-height: 1.55; color: #374151;
-      font-weight: 400;
+      font-size: 13px; line-height: 1.5; color: #3D405B;
+      font-weight: 500;
     }
     .row-label {
-      font-size: 10px; font-weight: 600; letter-spacing: 0.4px;
-      text-transform: uppercase; color: #6b7280; margin-bottom: 2px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+      text-transform: uppercase; color: #AB5C48; margin-bottom: 4px;
     }
 
     /* Divider */
-    .divider { height: 1px; background: #e5e7eb; margin: 2px 0; }
+    .divider { height: 1px; background: rgba(61, 64, 91, 0.06); margin: 0 16px; }
 
     /* Skeleton shimmer */
     @keyframes shimmer {
-      0%   { background-position: -340px 0; }
-      100% { background-position: 340px 0; }
+      0%   { background-position: -360px 0; }
+      100% { background-position: 360px 0; }
     }
     .skeleton-base {
-      background: #f3f4f6;
-      background-image: linear-gradient(90deg, #f3f4f6 0px, #ffffff 80px, #f3f4f6 160px);
-      background-size: 340px 100%;
+      background: rgba(255, 255, 255, 0.4);
+      background-image: linear-gradient(90deg, rgba(255,255,255,0) 0px, #FFFFFF 80px, rgba(255,255,255,0) 160px);
+      background-size: 360px 100%;
       animation: shimmer 1.4s infinite linear;
       border-radius: 6px;
     }
-    .skeleton-url   { height: 34px; border-radius: 8px; margin-bottom: 14px; }
-    .skeleton-label { height: 10px; width: 90px; border-radius: 4px; margin-bottom: 10px; }
-    .skeleton-row   { height: 52px; border-radius: 8px; margin-bottom: 2px; }
-    .skeleton-row:last-child { margin-bottom: 0; }
+    .skeleton-url   { height: 42px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(61,64,91,0.02); background-color:#fff;}
+    .skeleton-label { height: 12px; width: 110px; border-radius: 4px; margin-bottom: 12px; margin-left: 4px;}
+    .skeleton-row   { height: 160px; border-radius: 16px; margin-bottom: 0; box-shadow: 0 4px 20px rgba(61,64,91,0.03); background-color:#fff;}
 
     /* Idle */
     .idle-state {
       display: flex; flex-direction: column; align-items: center;
-      padding: 28px 16px; gap: 8px; text-align: center;
+      padding: 40px 20px; text-align: center;
     }
     .idle-icon {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: transparent; border: 1px solid #e5e7eb;
+      width: 56px; height: 56px; border-radius: 16px;
+      background: #FFFFFF; 
+      box-shadow: 0 8px 24px rgba(61, 64, 91, 0.08);
       display: flex; align-items: center; justify-content: center;
-      color: #6b7280;
+      color: #81B29A;
+      margin-bottom: 20px;
     }
-    .idle-title { font-size: 12.5px; font-weight: 600; color: #111827; }
-    .idle-sub   { font-size: 11.5px; color: #6b7280; line-height: 1.5; max-width: 240px; }
+    .idle-icon svg { width: 28px; height: 28px; }
+    .idle-title { font-size: 15px; font-weight: 700; color: #3D405B; margin-bottom: 8px; }
+    .idle-sub   { font-size: 13px; color: #AB5C48; line-height: 1.5; font-weight: 500; max-width: 260px; }
   </style>
 </head>
 <body>
@@ -159,8 +183,6 @@
   <div id="main-content" class="content">
     <div class="skeleton-base skeleton-url"></div>
     <div class="skeleton-base skeleton-label"></div>
-    <div class="skeleton-base skeleton-row"></div>
-    <div class="skeleton-base skeleton-row"></div>
     <div class="skeleton-base skeleton-row"></div>
   </div>
 
