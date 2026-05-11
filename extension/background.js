@@ -72,7 +72,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
       // 2. Cache MISS — call the API
       console.log('[Aura] Cache MISS — calling API for', pageUrl);
-      fetch('http://localhost:3000/api/summarize', {
+      fetch('http://localhost:5000/api/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: request.text })
@@ -97,7 +97,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.action === 'checkMisinformation') {
-    fetch('http://localhost:3000/api/trust-shield', {
+    fetch('http://localhost:5000/api/trust-shield', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ texts: request.texts })

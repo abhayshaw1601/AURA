@@ -106,7 +106,7 @@ function renderError() {
     <div class="idle-state">
       <div class="idle-icon" style="color:#3f3f3f;">${ICONS.alert}</div>
       <div class="idle-title">Analysis failed</div>
-      <div class="idle-sub">Backend unreachable. Ensure the Next.js server is running on port 3000.</div>
+      <div class="idle-sub">Backend unreachable. Ensure the Next.js server is running on port 5000.</div>
     </div>
   `;
 }
