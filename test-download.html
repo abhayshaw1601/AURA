@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Aura Download Test</title>
+    <style>
+        body { font-family: sans-serif; padding: 40px; background: #0a0a0a; color: white; }
+        a { display: inline-block; padding: 10px 20px; background: #92400E; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Test Aura's Download Audit</h1>
+    <p>This button downloads a sample PDF from a different domain (w3.org). Since you are opening this locally, the domains will mismatch, which should trigger Aura's "Suspicious" alert.</p>
+    
+    <!-- Downloading a file from an external domain to trigger the mismatch heuristic -->
+    <a href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" download>Download Test File</a>
+</body>
+</html>

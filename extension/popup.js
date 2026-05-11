@@ -166,3 +166,43 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     });
   }, 500);
 });
+
+// ── Download Risk: listen for real-time alert from background.js ───
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.action === 'downloadRiskUpdate') {
+    renderDownloadAlert(message.url);
+  }
+});
+
+/**
+ * Injects a calm inline banner at the top of the popup's main-content
+ * when a suspicious download is detected while the popup is open.
+ */
+function renderDownloadAlert(url) {
+  const existing = document.getElementById('download-alert-banner');
+  if (existing) return; // already showing
+
+  let hostname = url;
+  try { hostname = new URL(url).hostname; } catch (_) {}
+
+  const banner = document.createElement('div');
+  banner.id = 'download-alert-banner';
+  banner.style.cssText = `
+    margin: 14px 16px 0;
+    padding: 10px 12px;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-left: 3px solid #92400E;
+    border-radius: 8px;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: #a3a3a3;
+  `;
+  banner.innerHTML = `
+    <div style="font-weight:600;color:#e5e5e5;margin-bottom:3px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Download Notice</div>
+    <div style="color:#737373;">${hostname} — source metadata inconsistent with browsing flow.</div>
+  `;
+
+  const mainContent = document.getElementById('main-content');
+  if (mainContent) mainContent.prepend(banner);
+}

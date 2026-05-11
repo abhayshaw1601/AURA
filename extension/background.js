@@ -117,3 +117,93 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     chrome.action.setBadgeText({ text: '', tabId });
   }
 });
+
+// ═══════════════════════════════════════════════════════════════════
+// ── Download Audit (Ambient Security)  ────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * checkSuspicious — stub for teammate's implementation.
+ * Replace this function body with the actual logic provided.
+ * @param {string} url      — the download URL
+ * @param {string} referrer — the page that triggered the download
+ * @returns {number} 0 = Safe, 1 = Suspicious
+ */
+function checkSuspicious(url, referrer) {
+  // ── Teammate inserts real logic here ──────────────────────────
+  // Placeholder heuristic: flag if the download URL's domain
+  // doesn't share a root with the referrer domain.
+  try {
+    const dlHost  = new URL(url).hostname.replace(/^www\./, '');
+    const refHost = referrer ? new URL(referrer).hostname.replace(/^www\./, '') : '';
+    const dlRoot  = dlHost.split('.').slice(-2).join('.');
+    const refRoot = refHost.split('.').slice(-2).join('.');
+    return (refRoot && dlRoot !== refRoot) ? 1 : 0;
+  } catch (_) {
+    return 0; // default safe on parse errors
+  }
+}
+
+/**
+ * Non-blocking download audit listener.
+ * The download is NEVER paused or cancelled — only audited.
+ */
+chrome.downloads.onCreated.addListener((downloadItem) => {
+  const { id, url, referrer, mime } = downloadItem;
+
+  console.log(`[Aura Download Audit] id=${id} mime=${mime} url=${url}`);
+
+  // Run audit asynchronously — never blocks the download
+  Promise.resolve().then(() => {
+    const isSuspicious = checkSuspicious(url, referrer || '');
+
+    if (isSuspicious === 0) {
+      // Safe — maintain calm/ambient flow, do nothing
+      console.log('[Aura Download Audit] Safe:', url);
+      return;
+    }
+
+    // ── Suspicious ────────────────────────────────────────────────
+    console.warn('[Aura Download Audit] Suspicious download detected:', url);
+
+    // 1. Persist the flagged file ID in chrome.storage
+    chrome.storage.local.set({
+      [`aura_download_${id}`]: {
+        id,
+        url,
+        referrer: referrer || '',
+        mime: mime || '',
+        flaggedAt: Date.now(),
+        isSuspicious: true,
+      }
+    });
+
+    // 2. Update the extension badge — soft yellow, calm indicator
+    chrome.action.setBadgeText({ text: '!' });
+    chrome.action.setBadgeBackgroundColor({ color: '#92400E' }); // dark amber, monochromatic
+
+    // 3. Find the active tab and notify the content script to show toast
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tab = tabs[0];
+      if (!tab) return;
+
+      // Send to content.js to inject the Shadow DOM toast
+      chrome.tabs.sendMessage(tab.id, {
+        action: 'showDownloadAlert',
+        downloadId: id,
+        url,
+        referrer: referrer || '',
+      }).catch(() => {}); // silently ignore if content script not present
+
+      // Also notify popup if it's open
+      chrome.runtime.sendMessage({
+        action: 'downloadRiskUpdate',
+        downloadId: id,
+        url,
+        referrer: referrer || '',
+        mime: mime || '',
+      }).catch(() => {}); // popup may not be open — that's fine
+    });
+  });
+});
+
