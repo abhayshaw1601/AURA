@@ -2,40 +2,178 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aura</title>
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 340px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #0a0a0a;
+      color: #e5e5e5;
+    }
+
+    /* ─── Header ─── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid #1f1f1f;
+    }
+    .brand { display: flex; align-items: center; gap: 9px; }
+    .brand-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: #181818; border: 1px solid #2a2a2a;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .brand-icon svg { color: #e5e5e5; }
+    .brand-name { font-size: 14px; font-weight: 600; color: #f5f5f5; }
+    .brand-sub  { font-size: 10px; color: #525252; margin-top: 1px; }
+
+    /* Status pill — monochromatic only */
+    .status-pill {
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px 9px; border-radius: 999px;
+      font-size: 11px; font-weight: 500;
+      background: #181818; border: 1px solid #2a2a2a;
+      color: #a3a3a3;
+    }
+    .status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #525252;
+    }
+    .status-pill.low  .status-dot { background: #d4d4d4; }
+    .status-pill.low  { color: #d4d4d4; }
+    .status-pill.med  .status-dot { background: #a3a3a3; }
+    .status-pill.high .status-dot { background: #737373; }
+    .status-pill.high { color: #737373; }
+    .status-pill.scanning .status-dot { background: #404040; animation: blink 1.2s infinite; }
+
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.2; } }
+
+    /* ─── Content ─── */
+    .content { padding: 14px 16px; }
+
+    /* URL bar */
+    .url-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 11px; border-radius: 8px;
+      background: #111; border: 1px solid #1f1f1f;
+      margin-bottom: 14px;
+    }
+    .url-bar svg { color: #404040; flex-shrink: 0; }
+    .url-text { font-size: 11.5px; color: #737373; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Section label */
+    .section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.9px;
+      text-transform: uppercase; color: #555555; margin-bottom: 9px;
+    }
+
+    /* Summary rows */
+    .summary-list { display: flex; flex-direction: column; gap: 2px; }
+
+    .summary-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 11px 12px; border-radius: 8px;
+      border: 1px solid transparent;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .summary-row:hover { background: #111; border-color: #1f1f1f; }
+
+    .row-icon {
+      width: 20px; height: 20px; flex-shrink: 0; margin-top: 0px;
+      color: #525252;
+    }
+    .row-icon svg { width: 16px; height: 16px; }
+
+    .row-text {
+      font-size: 12.5px; line-height: 1.55; color: #c4c4c4;
+      font-weight: 400;
+    }
+    .row-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.4px;
+      text-transform: uppercase; color: #606060; margin-bottom: 2px;
+    }
+
+    /* Divider */
+    .divider { height: 1px; background: #1a1a1a; margin: 2px 0; }
+
+    /* Skeleton shimmer */
+    @keyframes shimmer {
+      0%   { background-position: -340px 0; }
+      100% { background-position: 340px 0; }
+    }
+    .skeleton-base {
+      background: #1a1a1a;
+      background-image: linear-gradient(90deg, #1a1a1a 0px, #242424 80px, #1a1a1a 160px);
+      background-size: 340px 100%;
+      animation: shimmer 1.4s infinite linear;
+      border-radius: 6px;
+    }
+    .skeleton-url   { height: 34px; border-radius: 8px; margin-bottom: 14px; }
+    .skeleton-label { height: 10px; width: 90px; border-radius: 4px; margin-bottom: 10px; }
+    .skeleton-row   { height: 52px; border-radius: 8px; margin-bottom: 2px; }
+    .skeleton-row:last-child { margin-bottom: 0; }
+
+    /* Idle */
+    .idle-state {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 28px 16px; gap: 8px; text-align: center;
+    }
+    .idle-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: #111; border: 1px solid #1f1f1f;
+      display: flex; align-items: center; justify-content: center;
+      color: #404040;
+    }
+    .idle-title { font-size: 12.5px; font-weight: 600; color: #a3a3a3; }
+    .idle-sub   { font-size: 11.5px; color: #6b6b6b; line-height: 1.5; max-width: 240px; }
+
+    /* Footer */
+    .footer {
+      padding: 8px 16px; border-top: 1px solid #141414;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .footer-text { font-size: 10px; color: #4b4b4b; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
-    <header class="header">
-      <h1 class="brand-name">Aura</h1>
-      <div id="status-badge" class="status-badge">
-        <div class="status-dot"></div>
-        <span id="status-text">Inactive</span>
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">
+      <div class="brand-icon">
+        <!-- Lucide: shield -->
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
       </div>
-    </header>
-
-    <!-- Main Content -->
-    <main id="main-content">
-      <!-- Default Idle State (Natural/Hand-drawn) -->
-      <div class="empty-state">
-        <div class="hand-drawn-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
-        </div>
-        <h2 class="empty-title">Resting</h2>
-        <p class="empty-sub">Navigate to a policy page to begin your privacy journey.</p>
+      <div>
+        <div class="brand-name">Aura</div>
+        <div class="brand-sub">Ambient Security Layer</div>
       </div>
-    </main>
+    </div>
+    <div id="status-pill" class="status-pill scanning">
+      <div class="status-dot"></div>
+      <span id="status-text">Scanning</span>
+    </div>
+  </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="footer-dot"></div>
-      <span class="footer-text">Gemini 2.5 Flash Lite</span>
-    </footer>
+  <!-- Main -->
+  <div id="main-content" class="content">
+    <div class="skeleton-base skeleton-url"></div>
+    <div class="skeleton-base skeleton-label"></div>
+    <div class="skeleton-base skeleton-row"></div>
+    <div class="skeleton-base skeleton-row"></div>
+    <div class="skeleton-base skeleton-row"></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+    <span class="footer-text">Gemini 2.5 Flash Lite</span>
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#333333" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
   </div>
 
   <script src="popup.js"></script>
