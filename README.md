@@ -2,7 +2,7 @@
 
 *A subtle, non-intrusive browser extension designed to protect users without interrupting their workflow.*
 
-[Chrome Manifest V3] | [Next.js 16] | [Gemini 2.5 Flash Lite]
+![Chrome](https://img.shields.io/badge/Chrome-MV3-E86D1F?style=flat&logo=googlechrome&logoColor=white&labelColor=333333) ![Next.js](https://img.shields.io/badge/Next.js-16.2-000000?style=flat&logo=nextdotjs&logoColor=white&labelColor=333333) ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat&logo=typescript&logoColor=white&labelColor=333333) ![Gemini](https://img.shields.io/badge/Gemini-2.5%20Flash-8E75C2?style=flat&logo=googlegemini&logoColor=white&labelColor=333333)
 
 ---
 
@@ -52,9 +52,9 @@ graph TB
     end
 
     CS -->|Page Data| BG
-    BG -->|Sync & Cache| TL
+    BG -->|"Sync & Cache"| TL
     BG -->|Audit| CC
-    BG -->|Analyze (Conditional)| JS
+    BG -->|"Analyze (Conditional)"| JS
     BG -->|Intercept Download| BG
     JS -->|Prompt| GM
     SR -->|Prompt| GM
