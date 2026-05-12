@@ -18,7 +18,7 @@ Aura operates as an ambient security layer within your browser. It monitors your
 * **Privacy Sense**: Detects privacy policies and terms of service pages, generating a concise, plain-English summary of critical data retention and selling practices.
 * **Trust Shield**: Scans social media feeds to detect urgency bias, tone mismatches, and metadata inconsistencies that indicate potential misinformation.
 * **Download Audit**: Monitors active downloads and cross-references their origin domains against the user's current browsing flow. Emits subtle ambient toasts if a cross-domain or injected download is detected.
-* **Ambient UI**: Utilizes the Shadow DOM to inject subtle visual indicators (such as pulsing icons, glassmorphic panels, and non-intrusive toasts) that alert users without disrupting their flow.
+* **Ambient UI & Notification Stack**: Employs a multi-layered response model. Subtle visual updates occur in the Shadow DOM (glassmorphic icons, pulsing nodes), while critical threat overrides utilize the browser `badge` and native **OS-level desktop notifications** for maximum observability.
 
 ---
 
@@ -52,9 +52,9 @@ graph TB
     end
 
     CS -->|Page Data| BG
-    BG -->|Sync| TL
+    BG -->|Sync & Cache| TL
     BG -->|Audit| CC
-    BG -->|Analyze| JS
+    BG -->|Analyze (Conditional)| JS
     BG -->|Intercept Download| BG
     JS -->|Prompt| GM
     SR -->|Prompt| GM
@@ -65,6 +65,7 @@ graph TB
     BG -->|Update Badge| PU
     BG -->|Trigger Alert| CS
     CS -->|Render Toast/UI| SD
+    BG -.->|Alert| OS[OS Native Notification]
 ```
 
 </details>
@@ -85,15 +86,20 @@ sequenceDiagram
     User->>Ext: Navigates to a new domain
     Ext->>Ext: Check against local Threat List cache
     alt Domain Blacklisted
-        Ext->>User: Display immediate danger indicator
+        Ext->>User: Trigger OS-Notification & Inject Shadow DOM Toast
     else Domain Unknown
         Ext->>API: /api/cert-check (Fetch TLS & Headers)
         API-->>Ext: Return Certificate & Header Data
-        Ext->>API: /api/judge-site (Send cert data, page text, domain)
-        API->>AI: Evaluate for zero-day phishing
-        AI-->>API: Inference score and risk level
-        API-->>Ext: Return judgment
-        Ext->>User: Update UI badge and status panel
+        alt Integrity Issues Detected
+            Ext->>API: /api/judge-site (Send metadata + context)
+            API->>AI: Evaluate for zero-day phishing
+            AI-->>API: Inference score and risk level
+            API-->>Ext: Return judgment
+            Ext->>User: Trigger Alert, Badge & OS-Notification
+        else Zero Integrity Issues
+            Ext->>Ext: Skip Inference Engine (Gate Optimization)
+            Ext->>User: Update Badge to Safe
+        end
     end
 ```
 
@@ -126,6 +132,7 @@ sequenceDiagram
     alt Domain Mismatch Detected
         Ext->>Content: Send 'showDownloadAlert' message
         Content->>User: Inject non-intrusive Shadow DOM Toast
+        Ext->>User: Fire Native OS Alert Notification
     else Domain Matches
         Ext->>Ext: Allow silently
     end
@@ -156,6 +163,18 @@ AURA/
     ├── next.config.ts          
     └── .env                    
 ```
+---
+
+## Developer & Architecture Notes
+
+### Optimization Gates
+To preserve computational budget and minimize AI latency, Phase 3 (AI Inference) employs a conditional logic gate. **Zero-Day analysis is skipped entirely if Phase 1 audits reveal perfect certificate chain and header integrity.** Inference only begins if pre-existing security anomalies justify behavioral context review.
+
+### Proxy Caching
+The Backend Server operates as a memory-mapped proxy for the Threat Intelligence Layer. It performs automatic 1-hour server-side caching of external host sources to insulate external APIs from rate limits caused by high volume client sync calls.
+
+### Dynamic Feed Observers
+The **Trust Shield** relies on an unmetered `MutationObserver` in the foreground DOM layer that identifies newly mounted dynamic articles (e.g. Twitter infini-scroll) utilizing tracking markers (`data-aura-scanned`), ensuring comprehensive real-time audit application.
 
 ---
 
