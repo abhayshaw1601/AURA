@@ -135,6 +135,19 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   let hostname = url;
   try { hostname = new URL(url).hostname; } catch (_) {}
 
+  // Check for immediate threats to render a danger banner regardless of page state
+  const threatKey = `aura_threat_${tab.id}`;
+  const aiKey = `aura_ai_${tab.id}`;
+  chrome.storage.local.get([threatKey, aiKey], (res) => {
+    const tData = res[threatKey];
+    const aData = res[aiKey];
+    if (tData && tData.blacklisted) {
+      renderSiteThreatAlert(`Domain matches known blacklist (${tData.source || 'database'}).`);
+    } else if (aData && (aData.score > 60 || aData.riskLevel === 'high')) {
+      renderSiteThreatAlert(`AI Inference triggered high risk alert: ${aData.reason || 'Unknown threat pattern'}.`);
+    }
+  });
+
   const isPrivacyPage = url.toLowerCase().includes('privacy') || url.toLowerCase().includes('terms');
   if (!isPrivacyPage) { renderIdle(hostname); return; }
 
@@ -213,9 +226,37 @@ function renderDownloadAlert(url) {
     <div style="font-weight:600;color:#AB5C48;margin-bottom:3px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Download Notice</div>
     <div style="color:#AB5C48;">${hostname} — source metadata inconsistent with browsing flow.</div>
   `;
+  const alertStack = document.getElementById('alert-stack');
+  if (alertStack) alertStack.prepend(banner);
+}
 
-  const mainContent = document.getElementById('main-content');
-  if (mainContent) mainContent.prepend(banner);
+/**
+ * Injects an emergency inline banner at the top of the popup's main-content
+ * if the user loads the popup while on a dangerous site.
+ */
+function renderSiteThreatAlert(reason) {
+  const existing = document.getElementById('site-threat-banner');
+  if (existing) return; // already showing
+
+  const banner = document.createElement('div');
+  banner.id = 'site-threat-banner';
+  banner.style.cssText = `
+    margin: 14px 16px 0;
+    padding: 10px 12px;
+    background: rgba(224, 122, 95, 0.1);
+    border: 1px solid rgba(171, 92, 72, 0.3);
+    border-left: 4px solid #dc2626;
+    border-radius: 8px;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: #b91c1c;
+  `;
+  banner.innerHTML = `
+    <div style="font-weight:600;color:#b91c1c;margin-bottom:3px;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Site Threat Detected</div>
+    <div style="color:#991b1b;">${reason || 'This domain is flagged as highly suspicious. Proceed with caution.'}</div>
+  `;
+  const alertStack = document.getElementById('alert-stack');
+  if (alertStack) alertStack.prepend(banner);
 }
 
 // ═══════════════════════════════════════════════════════════

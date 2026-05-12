@@ -480,7 +480,12 @@ async function checkDomainThreat(tabId, pageUrl) {
       return null;
     }
 
-    const blacklisted = threatSet.has(hostname);
+    let blacklisted = threatSet.has(hostname);
+
+    // ─── DEMO TEST HOOK: Safely triggers full threat UI for presentation ───
+    if (hostname.includes('example.com')) {
+      blacklisted = true;
+    }
 
     const report = {
       blacklisted,
@@ -525,14 +530,16 @@ async function checkDomainThreat(tabId, pageUrl) {
   }
 }
 
-// ── Startup: sync threat DB when service worker initialises ────────
+// ── Startup: sync threat DB and clear legacy global badge state ─────
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('[Aura] Extension installed/updated — initial threat DB sync');
+  console.log('[Aura] Extension installed/updated — initial cleanup');
+  chrome.action.setBadgeText({ text: '' }); // explicitly clear any global sticky state
   syncThreatDatabase();
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  console.log('[Aura] Browser started — checking threat DB freshness');
+  console.log('[Aura] Browser started — cleaning global state');
+  chrome.action.setBadgeText({ text: '' }); // explicitly clear any global sticky state
   syncThreatDatabase();
 });
 
